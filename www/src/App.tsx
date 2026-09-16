@@ -5,6 +5,8 @@ import { AppContextProvider } from './Contexts/AppContext';
 import Navigation from './Components/Navigation';
 import ConnectionBanner from './Components/dc/ConnectionBanner';
 import { useConnectionMonitor } from './Hooks/dc/useConnectionMonitor';
+import { useDcMode } from './Store/useDcMode';
+import { dcElement } from './Data/dc/routeSubstitutions';
 import GeneralSettingsPage from './Pages/dc/GeneralSettingsPage';
 import ControllerViewPage from './Pages/dc/ControllerViewPage';
 
@@ -25,18 +27,22 @@ import BootModeMappingPage from './Pages/BootModeMapping';
 
 const App = () => {
 	useConnectionMonitor();
+	const dcMode = useDcMode((s) => s.enabled);
 	return (
 		<AppContextProvider>
 			<Router>
 				<Navigation />
 				<div className="body-content container-lg">
-					<ConnectionBanner />
+					{dcMode && <ConnectionBanner />}
 					<Routes>
-						<Route path="/" element={<HomePage />} />
+						<Route path="/" element={dcElement('/', dcMode, <HomePage />)} />
 						<Route path="/settings" element={<SettingsPage />} />
 						<Route path="/dc/controller" element={<ControllerViewPage />} />
 						<Route path="/dc/settings" element={<GeneralSettingsPage />} />
-						<Route path="/pin-mapping" element={<PinMappingPage />} />
+						<Route
+							path="/pin-mapping"
+							element={dcElement('/pin-mapping', dcMode, <PinMappingPage />)}
+						/>
 						<Route
 							path="/boot-mode-mapping"
 							element={<BootModeMappingPage />}

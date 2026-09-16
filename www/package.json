@@ -39,7 +39,7 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"size-check": "node scripts/check-bundle-size.js",
-		"lint:dc": "eslint src/Data/dc src/Hooks/dc src/Components/dc src/Pages/dc src/Store/useConnectionStore.ts --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0"
+		"lint:dc": "eslint src/Data/dc src/Hooks/dc src/Components/dc src/Pages/dc src/Store/useConnectionStore.ts src/Store/useDcMode.ts --ext js,jsx,ts,tsx --report-unused-disable-directives --max-warnings 0"
 	},
 	"devDependencies": {
 		"@testing-library/jest-dom": "^6.9.1",

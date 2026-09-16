@@ -1,8 +1,9 @@
 import { useContext, useState } from 'react';
 import { Nav, NavDropdown, Navbar, Button, Modal } from 'react-bootstrap';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../Contexts/AppContext';
+import { useDcMode } from '../Store/useDcMode';
 import FormSelect from './FormSelect';
 import { saveButtonLabels } from '../Services/Storage';
 import { BUTTONS } from '../Data/Buttons';
@@ -45,13 +46,11 @@ const Navigation = () => {
 
 	const { t } = useTranslation('');
 
-	// D_C_Theo interface toggle: switch between the original interface and the
-	// new D_C_Theo section. Scales to swap the whole nav as more /dc/* pages land.
-	const navigate = useNavigate();
-	const location = useLocation();
-	const inModifiedInterface = location.pathname.startsWith('/dc');
-	const toggleInterface = () =>
-		navigate(inModifiedInterface ? '/' : '/dc/controller');
+	// D_C_Theo mode: persistent toggle. ON substitutes our enhanced pages into the
+	// stock interface (Home + Pin Mapping -> controller view) and shows our additions;
+	// OFF shows the original, untouched GP2040 interface.
+	const dcEnabled = useDcMode((s) => s.enabled);
+	const toggleDc = useDcMode((s) => s.toggle);
 
 	// eventKey prop is required on NavLink components in order for mobile menu
 	// to autoclose, so just auto increment as we build the menu
@@ -77,15 +76,13 @@ const Navigation = () => {
 				</Nav.Link>
 				<button
 					type="button"
-					onClick={toggleInterface}
-					aria-pressed={inModifiedInterface}
+					onClick={toggleDc}
+					aria-pressed={dcEnabled}
 					title={
-						inModifiedInterface
-							? t('DC:switch-to-original')
-							: t('DC:switch-to-dc')
+						dcEnabled ? t('DC:switch-to-original') : t('DC:switch-to-dc')
 					}
 					className={`tw-ml-2 tw-shrink-0 tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-leading-none tw-transition-colors ${
-						inModifiedInterface
+						dcEnabled
 							? 'tw-border-sky-600 tw-bg-sky-600 tw-text-white'
 							: 'tw-border-slate-600 tw-bg-slate-700 tw-text-slate-400'
 					}`}
