@@ -9,6 +9,26 @@ type Props = {
   labelFor: (buttonKey: LayoutButtonKey) => string;
 };
 
+type ButtonColors = {
+  fill: string;
+  stroke: string;
+  label: string;
+  pin: string;
+};
+
+function colorsFor(mapped: boolean, held: boolean): ButtonColors {
+  if (!mapped) {
+    // Unassigned: recede into the background.
+    return { fill: '#0f172a', stroke: '#334155', label: '#64748b', pin: '#64748b' };
+  }
+  if (held) {
+    // Lit: bright fill with DARK text so it stays readable (no white-on-light wash-out).
+    return { fill: '#38bdf8', stroke: '#0ea5e9', label: '#0b1220', pin: '#1e293b' };
+  }
+  // Assigned, idle: dark fill with light text.
+  return { fill: '#334155', stroke: '#64748b', label: '#f1f5f9', pin: '#cbd5e1' };
+}
+
 export default function ControllerLayout({
   layoutStyle,
   mapping,
@@ -21,15 +41,14 @@ export default function ControllerLayout({
   return (
     <svg
       viewBox={layout.viewBox}
-      className="tw-w-full tw-max-w-2xl"
+      className="tw-w-full tw-max-w-4xl"
       role="img"
       aria-label="Controller layout"
     >
       {layout.placements.map((p) => {
         const mapped = byKey.get(p.key);
         const held = mapped ? heldPins.includes(mapped.pin) : false;
-        const fill = mapped ? (held ? '#38bdf8' : '#1e293b') : '#0f172a';
-        const stroke = mapped ? (held ? '#7dd3fc' : '#475569') : '#334155';
+        const c = colorsFor(Boolean(mapped), held);
         return (
           <g
             key={p.key}
@@ -40,26 +59,27 @@ export default function ControllerLayout({
               cx={p.x}
               cy={p.y}
               r={p.r}
-              fill={fill}
-              stroke={stroke}
+              fill={c.fill}
+              stroke={c.stroke}
               strokeWidth={2}
             />
             <text
               x={p.x}
               y={p.y - 2}
               textAnchor="middle"
-              fontSize="9"
-              fill="#e2e8f0"
+              fontSize="13"
+              fontWeight={600}
+              fill={c.label}
             >
               {labelFor(p.key)}
             </text>
             {mapped && (
               <text
                 x={p.x}
-                y={p.y + 9}
+                y={p.y + 12}
                 textAnchor="middle"
-                fontSize="8"
-                fill="#94a3b8"
+                fontSize="9"
+                fill={c.pin}
               >
                 {`P${mapped.pin}`}
               </text>
