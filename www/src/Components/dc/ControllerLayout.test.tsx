@@ -21,7 +21,7 @@ describe('ControllerLayout', () => {
     );
     const b1 = screen.getByTestId('ctrl-btn-B1');
     expect(b1).toHaveTextContent('Cross');
-    expect(b1).toHaveTextContent('P0');
+    expect(b1).toHaveTextContent('Pin 0');
     expect(b1).toHaveAttribute('data-held', 'false');
   });
 

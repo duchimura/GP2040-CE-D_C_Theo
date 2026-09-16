@@ -7,6 +7,7 @@ import {
 } from '../../Hooks/dc/useControllerMapping';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
+import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import LayoutStyleSelector, {
   readSavedLayoutStyle,
   saveLayoutStyle,
@@ -59,12 +60,17 @@ export default function ControllerViewPage() {
         Each button shows its label and GPIO pin. Press a button on your
         controller to light it up here.
       </p>
-      <ControllerLayout
-        layoutStyle={style}
-        mapping={mapping}
-        heldPins={heldPins}
-        labelFor={labelFor}
-      />
+      <div className="tw-flex tw-flex-col tw-gap-4 lg:tw-flex-row lg:tw-items-start">
+        <div className="tw-flex-1">
+          <ControllerLayout
+            layoutStyle={style}
+            mapping={mapping}
+            heldPins={heldPins}
+            labelFor={labelFor}
+          />
+        </div>
+        <SystemStatsPanel />
+      </div>
     </div>
   );
 }

@@ -9,6 +9,26 @@ vi.mock('../../Hooks/dc/useControllerMapping', () => ({
 vi.mock('../../Hooks/dc/useHeldPinsMonitor', () => ({
   useHeldPinsMonitor: vi.fn().mockReturnValue([]),
 }));
+vi.mock('../../Store/useSystemStats', () => ({
+  default: () => ({
+    currentVersion: '',
+    latestVersion: '',
+    latestDownloadUrl: '',
+    boardConfigProperties: { label: '', fileName: '' },
+    memoryReport: {
+      percentageFlash: 0,
+      percentageHeap: 0,
+      physicalFlash: 0,
+      staticAllocs: 0,
+      totalFlash: 0,
+      totalHeap: 0,
+      usedFlash: 0,
+      usedHeap: 0,
+    },
+    stats: { architecture: '', build: '', buildType: '' },
+    getSystemStats: vi.fn(),
+  }),
+}));
 
 import { loadControllerMapping } from '../../Hooks/dc/useControllerMapping';
 import ControllerViewPage from './ControllerViewPage';
