@@ -90,7 +90,7 @@ const Navigation = () => {
 							: 'tw-border-sky-500 tw-bg-transparent tw-text-sky-300'
 					}`}
 				>
-					D_C_Theo
+					D_C_Theo Version
 				</button>
 			</Navbar.Brand>
 			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
