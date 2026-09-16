@@ -87,7 +87,7 @@ const Navigation = () => {
 					className={`tw-ml-2 tw-shrink-0 tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-leading-none tw-transition-colors ${
 						inModifiedInterface
 							? 'tw-border-sky-600 tw-bg-sky-600 tw-text-white'
-							: 'tw-border-sky-500 tw-bg-transparent tw-text-sky-300'
+							: 'tw-border-slate-600 tw-bg-slate-700 tw-text-slate-400'
 					}`}
 				>
 					{t('DC:interface-badge')}
