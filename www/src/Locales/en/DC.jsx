@@ -49,4 +49,11 @@ export default {
 	'remap-none-pending': 'No changes',
 	'remap-error': 'Save failed — try again',
 	'remap-select-hint': 'Select a function, then click the buttons to assign it.',
+	// Profiles
+	profiles: 'Profiles',
+	'profile-rename': 'Profile name',
+	'profile-add': 'Add profile',
+	'profile-enabled': 'Enabled',
+	'profile-copy-base': 'Copy from base',
+	'profile-n': 'Profile {{n}}',
 };
