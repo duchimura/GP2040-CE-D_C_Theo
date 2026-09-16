@@ -2,22 +2,13 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../../Contexts/AppContext';
 import { BUTTONS } from '../../Data/Buttons';
-import {
-  loadControllerMapping,
-  type MappedButton,
-} from '../../Hooks/dc/useControllerMapping';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
-import {
-  initRemapState,
-  assignFunction,
-  pendingPins,
-  type RemapState,
-} from '../../Hooks/dc/useRemapState';
-import { saveRemap } from '../../Hooks/dc/applyMappingChanges';
+import { useProfilesView } from '../../Hooks/dc/useProfilesView';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import FunctionList from '../../Components/dc/FunctionList';
 import RemapBar from '../../Components/dc/RemapBar';
+import ProfilesBar from '../../Components/dc/ProfilesBar';
 import LayoutStyleSelector from '../../Components/dc/LayoutStyleSelector';
 import {
   readSavedLayoutStyle,
@@ -32,15 +23,13 @@ import {
 
 export default function ControllerViewPage() {
   const { t } = useTranslation('DC');
-  const [mapping, setMapping] = useState<MappedButton[] | null>(null);
+  const view = useProfilesView();
   const [style, setStyle] = useState<LayoutStyle>(
     readSavedLayoutStyle() ?? 'leverless',
   );
   const [remapMode, setRemapMode] = useState(false);
   const [selectedFn, setSelectedFn] = useState<LayoutButtonKey | null>(null);
-  const [remap, setRemap] = useState<RemapState | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState(false);
 
   // Pause identify polling while remapping so clicks/highlights stay unambiguous.
   const heldPins = useHeldPinsMonitor(!remapMode);
@@ -54,19 +43,8 @@ export default function ControllerViewPage() {
     (BUTTONS as Record<string, Record<string, string>>).gp2040;
   const labelFor = (key: LayoutButtonKey): string => labelSet[key] ?? key;
 
-  const pinByKey = useMemo(
-    () => new Map((mapping ?? []).map((m) => [m.buttonKey, m.pin])),
-    [mapping],
-  );
-  const keyByPin = useMemo(
-    () => new Map((mapping ?? []).map((m) => [m.pin, m.buttonKey])),
-    [mapping],
-  );
-
   useEffect(() => {
-    loadControllerMapping()
-      .then(setMapping)
-      .catch(() => setMapping([]));
+    view.load();
   }, []);
 
   const onStyleChange = (s: LayoutStyle) => {
@@ -74,58 +52,46 @@ export default function ControllerViewPage() {
     saveLayoutStyle(s);
   };
 
-  if (mapping === null) {
+  // In remap mode we render the snapshot mapping (stable positions) and override
+  // labels/pending from the current (edited) profile — no reflow mid-edit.
+  const pinByKey = useMemo(
+    () => new Map(view.snapshotMapping.map((m) => [m.buttonKey, m.pin])),
+    [view.snapshotMapping],
+  );
+
+  const overrideLabel = (key: LayoutButtonKey): string | undefined => {
+    if (!remapMode) return undefined;
+    const pin = pinByKey.get(key);
+    if (pin === undefined) return undefined;
+    const workingKey = buttonKeyForAction(view.currentActions[pin]);
+    return labelFor(workingKey ?? key);
+  };
+
+  const pendingKeySet = new Set<LayoutButtonKey>(
+    view.snapshotMapping
+      .filter((m) => view.currentActions[m.pin] !== view.snapshotActions[m.pin])
+      .map((m) => m.buttonKey),
+  );
+
+  const onButtonClick = (key: LayoutButtonKey) => {
+    if (!selectedFn) return;
+    const pin = pinByKey.get(key);
+    if (pin === undefined) return;
+    view.assignFunctionToPin(pin, actionForButtonKey(selectedFn));
+  };
+
+  const onSave = () => {
+    setSaving(true);
+    view.save().finally(() => setSaving(false));
+  };
+
+  if (view.profiles.length === 0) {
     return (
       <div data-testid="ctrl-waiting" className="tw-p-4">
         {t('waiting-for-controller')}
       </div>
     );
   }
-
-  const remapState = remap ?? initRemapState(mapping);
-
-  const enterRemap = () => {
-    setRemap(initRemapState(mapping));
-    setSelectedFn(null);
-    setSaveError(false);
-    setRemapMode(true);
-  };
-
-  const onButtonClick = (key: LayoutButtonKey) => {
-    if (!selectedFn) return;
-    const pin = pinByKey.get(key);
-    if (pin === undefined) return;
-    setRemap(assignFunction(remapState, pin, actionForButtonKey(selectedFn)));
-  };
-
-  const overrideLabel = (key: LayoutButtonKey): string | undefined => {
-    if (!remapMode) return undefined;
-    const pin = pinByKey.get(key);
-    if (pin === undefined) return undefined;
-    const workingKey = buttonKeyForAction(remapState.workingActions[pin]);
-    return labelFor(workingKey ?? key);
-  };
-
-  const pendingKeySet = new Set<LayoutButtonKey>(
-    pendingPins(remapState)
-      .map((pin) => keyByPin.get(pin))
-      .filter((k): k is LayoutButtonKey => Boolean(k)),
-  );
-
-  const onSave = () => {
-    setSaving(true);
-    setSaveError(false);
-    saveRemap(remapState.workingActions)
-      .then(() => loadControllerMapping())
-      .then((m) => {
-        setMapping(m);
-        setRemap(initRemapState(m));
-      })
-      .catch(() => setSaveError(true))
-      .finally(() => setSaving(false));
-  };
-
-  const onRevert = () => setRemap(initRemapState(mapping));
 
   return (
     <div className="tw-p-4 tw-space-y-4">
@@ -136,7 +102,7 @@ export default function ControllerViewPage() {
           <button
             type="button"
             data-testid="remap-toggle"
-            onClick={remapMode ? () => setRemapMode(false) : enterRemap}
+            onClick={remapMode ? () => setRemapMode(false) : () => setRemapMode(true)}
             className={`tw-rounded tw-px-3 tw-py-1 tw-text-sm ${
               remapMode
                 ? 'tw-bg-slate-700 tw-text-slate-200'
@@ -148,6 +114,17 @@ export default function ControllerViewPage() {
         </div>
       </div>
 
+      <ProfilesBar
+        profiles={view.profiles}
+        selectedIndex={view.selectedIndex}
+        maxProfiles={view.maxProfiles}
+        onSelect={view.setSelectedIndex}
+        onRename={view.rename}
+        onAdd={view.addProfile}
+        onToggleEnabled={view.toggleEnabled}
+        onCopyFromBase={view.copyFromBase}
+      />
+
       {remapMode ? (
         <div className="tw-space-y-3">
           <div className="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-gap-2">
@@ -155,12 +132,12 @@ export default function ControllerViewPage() {
               {t('remap-select-hint')}
             </span>
             <RemapBar
-              dirty={remapState.dirty}
+              dirty={view.dirty}
               pendingCount={pendingKeySet.size}
               saving={saving}
-              error={saveError}
+              error={view.error}
               onSave={onSave}
-              onRevert={onRevert}
+              onRevert={view.revert}
             />
           </div>
           <div className="tw-flex tw-gap-4">
@@ -172,7 +149,7 @@ export default function ControllerViewPage() {
             <div className="tw-flex-1">
               <ControllerLayout
                 layoutStyle={style}
-                mapping={mapping}
+                mapping={view.snapshotMapping}
                 heldPins={[]}
                 labelFor={labelFor}
                 onButtonClick={onButtonClick}
@@ -191,7 +168,7 @@ export default function ControllerViewPage() {
             <div className="tw-flex-1">
               <ControllerLayout
                 layoutStyle={style}
-                mapping={mapping}
+                mapping={view.currentMapping}
                 heldPins={heldPins}
                 labelFor={labelFor}
               />

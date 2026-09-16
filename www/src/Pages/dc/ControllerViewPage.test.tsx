@@ -2,17 +2,33 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('../../Hooks/dc/useControllerMapping', () => ({
-  loadControllerMapping: vi
-    .fn()
-    .mockResolvedValue([{ pin: 0, action: 5, buttonKey: 'B1' }]),
+const view = {
+  profiles: [{ profileLabel: 'P1', enabled: true }],
+  selectedIndex: 0,
+  setSelectedIndex: vi.fn(),
+  loading: false,
+  error: false,
+  dirty: true,
+  maxProfiles: 6,
+  currentMapping: [{ pin: 0, action: 5, buttonKey: 'B1' }],
+  snapshotMapping: [{ pin: 0, action: 5, buttonKey: 'B1' }],
+  currentActions: { 0: 5 },
+  snapshotActions: { 0: 5 },
+  assignFunctionToPin: vi.fn(),
+  rename: vi.fn(),
+  addProfile: vi.fn(),
+  toggleEnabled: vi.fn(),
+  copyFromBase: vi.fn(),
+  load: vi.fn(),
+  save: vi.fn().mockResolvedValue(undefined),
+  revert: vi.fn(),
+};
+
+vi.mock('../../Hooks/dc/useProfilesView', () => ({
+  useProfilesView: () => view,
 }));
 vi.mock('../../Hooks/dc/useHeldPinsMonitor', () => ({
   useHeldPinsMonitor: vi.fn().mockReturnValue([]),
-}));
-vi.mock('../../Hooks/dc/applyMappingChanges', () => ({
-  saveRemap: vi.fn().mockResolvedValue(undefined),
-  applyMappingChanges: vi.fn(),
 }));
 vi.mock('../../Store/useSystemStats', () => ({
   default: () => ({
@@ -35,30 +51,25 @@ vi.mock('../../Store/useSystemStats', () => ({
   }),
 }));
 
-import { loadControllerMapping } from '../../Hooks/dc/useControllerMapping';
-import { saveRemap } from '../../Hooks/dc/applyMappingChanges';
 import ControllerViewPage from './ControllerViewPage';
 
 beforeEach(() => vi.clearAllMocks());
 
 describe('ControllerViewPage', () => {
-  it('loads the mapping and renders the controller layout', async () => {
+  it('loads profiles and renders the controller layout + profiles bar', () => {
     render(<ControllerViewPage />);
-    await waitFor(() => expect(loadControllerMapping).toHaveBeenCalled());
-    expect(await screen.findByTestId('ctrl-btn-B1')).toBeInTheDocument();
+    expect(view.load).toHaveBeenCalled();
+    expect(screen.getByTestId('ctrl-btn-B1')).toBeInTheDocument();
+    expect(screen.getByTestId('profile-select-0')).toBeInTheDocument();
   });
 
-  it('remaps a button and saves', async () => {
+  it('remaps a button on the selected profile and saves', async () => {
     render(<ControllerViewPage />);
-    await screen.findByTestId('ctrl-btn-B1');
     await userEvent.click(screen.getByTestId('remap-toggle'));
-    await userEvent.click(screen.getByTestId('fn-B2')); // select function B2
-    await userEvent.click(screen.getByTestId('ctrl-btn-B1')); // assign to B1's pin
-    expect(screen.getByTestId('ctrl-btn-B1')).toHaveAttribute(
-      'data-pending',
-      'true',
-    );
+    await userEvent.click(screen.getByTestId('fn-B2'));
+    await userEvent.click(screen.getByTestId('ctrl-btn-B1'));
+    expect(view.assignFunctionToPin).toHaveBeenCalledWith(0, 6); // B2 = action 6
     await userEvent.click(screen.getByTestId('remap-save'));
-    await waitFor(() => expect(saveRemap).toHaveBeenCalled());
+    await waitFor(() => expect(view.save).toHaveBeenCalled());
   });
 });
