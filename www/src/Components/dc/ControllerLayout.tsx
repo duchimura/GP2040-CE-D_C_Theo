@@ -76,9 +76,9 @@ export default function ControllerLayout({
             {mapped && (
               <text
                 x={p.x}
-                y={p.y + 12}
+                y={p.y + 11}
                 textAnchor="middle"
-                fontSize="9"
+                fontSize="6.5"
                 fill={c.pin}
               >
                 {`P${mapped.pin}`}
