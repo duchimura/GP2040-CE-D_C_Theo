@@ -67,9 +67,8 @@ export default function ControllerLayout({
               x={p.x}
               y={p.y - 2}
               textAnchor="middle"
-              fontSize="13"
-              fontWeight={600}
               fill={c.label}
+              style={{ fontSize: '13px', fontWeight: 600 }}
             >
               {labelFor(p.key)}
             </text>
@@ -78,8 +77,8 @@ export default function ControllerLayout({
                 x={p.x}
                 y={p.y + 11}
                 textAnchor="middle"
-                fontSize="6.5"
                 fill={c.pin}
+                style={{ fontSize: '7px' }}
               >
                 {`P${mapped.pin}`}
               </text>
