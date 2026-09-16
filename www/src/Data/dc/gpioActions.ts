@@ -27,3 +27,21 @@ export function buttonKeyForAction(action: number): LayoutButtonKey | null {
   if (!actionKey) return null;
   return ACTION_KEY_TO_LAYOUT[actionKey] ?? null;
 }
+
+const LAYOUT_TO_ACTION_KEY: Record<LayoutButtonKey, string> = Object.fromEntries(
+  Object.entries(ACTION_KEY_TO_LAYOUT).map(([actionKey, layoutKey]) => [
+    layoutKey,
+    actionKey,
+  ]),
+) as Record<LayoutButtonKey, string>;
+
+export function actionForButtonKey(key: LayoutButtonKey): number {
+  return BUTTON_ACTIONS[LAYOUT_TO_ACTION_KEY[key] as keyof typeof BUTTON_ACTIONS];
+}
+
+export const ASSIGNABLE_FUNCTIONS: LayoutButtonKey[] = [
+  'Up', 'Down', 'Left', 'Right',
+  'B1', 'B2', 'B3', 'B4',
+  'L1', 'R1', 'L2', 'R2',
+  'S1', 'S2', 'A1', 'A2', 'L3', 'R3',
+];
