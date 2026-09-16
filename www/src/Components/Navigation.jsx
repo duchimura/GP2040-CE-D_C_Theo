@@ -59,8 +59,16 @@ const Navigation = () => {
 
 	return (
 		<Navbar collapseOnSelect expand="md" fixed="top">
-			<Navbar.Brand title={`GP2040-CE ${t('Navigation:home-label')}`}>
-				<Nav.Link as={NavLink} to="/" eventKey={eventKey++}>
+			<Navbar.Brand
+				title={`GP2040-CE ${t('Navigation:home-label')}`}
+				className="tw-flex tw-items-center"
+			>
+				<Nav.Link
+					as={NavLink}
+					to="/"
+					eventKey={eventKey++}
+					className="tw-flex tw-items-center tw-p-0"
+				>
 					<img
 						src="/images/logo.png"
 						className="title-logo"
@@ -76,7 +84,7 @@ const Navigation = () => {
 							? 'Switch to the original interface'
 							: 'Switch to the D_C_Theo interface'
 					}
-					className={`tw-ml-1 tw-align-middle tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-transition-colors ${
+					className={`tw-ml-2 tw-shrink-0 tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-leading-none tw-transition-colors ${
 						inModifiedInterface
 							? 'tw-border-sky-600 tw-bg-sky-600 tw-text-white'
 							: 'tw-border-sky-500 tw-bg-transparent tw-text-sky-300'
