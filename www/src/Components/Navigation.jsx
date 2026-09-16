@@ -51,7 +51,7 @@ const Navigation = () => {
 	const location = useLocation();
 	const inModifiedInterface = location.pathname.startsWith('/dc');
 	const toggleInterface = () =>
-		navigate(inModifiedInterface ? '/' : '/dc/settings');
+		navigate(inModifiedInterface ? '/' : '/dc/controller');
 
 	// eventKey prop is required on NavLink components in order for mobile menu
 	// to autoclose, so just auto increment as we build the menu

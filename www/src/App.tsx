@@ -6,6 +6,7 @@ import Navigation from './Components/Navigation';
 import ConnectionBanner from './Components/dc/ConnectionBanner';
 import { useConnectionMonitor } from './Hooks/dc/useConnectionMonitor';
 import GeneralSettingsPage from './Pages/dc/GeneralSettingsPage';
+import ControllerViewPage from './Pages/dc/ControllerViewPage';
 
 import HomePage from './Pages/HomePage';
 import PinMappingPage from './Pages/PinMapping';
@@ -33,6 +34,7 @@ const App = () => {
 					<Routes>
 						<Route path="/" element={<HomePage />} />
 						<Route path="/settings" element={<SettingsPage />} />
+						<Route path="/dc/controller" element={<ControllerViewPage />} />
 						<Route path="/dc/settings" element={<GeneralSettingsPage />} />
 						<Route path="/pin-mapping" element={<PinMappingPage />} />
 						<Route
