@@ -17,7 +17,7 @@ describe('GeneralSettingsPage', () => {
   it('loads current settings on mount', async () => {
     render(<GeneralSettingsPage />);
     await waitFor(() => expect(loadGeneralSettings).toHaveBeenCalled());
-    expect((await screen.findByTestId('input-mode')) as HTMLInputElement).toHaveValue(4);
+    expect((await screen.findByTestId('input-mode')) as HTMLSelectElement).toHaveValue('4');
   });
 
   it('saves and shows confirmation', async () => {

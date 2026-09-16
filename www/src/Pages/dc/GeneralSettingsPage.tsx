@@ -4,6 +4,7 @@ import {
   saveGeneralSettings,
   type GeneralSettings,
 } from '../../Hooks/dc/useGeneralSettings';
+import { INPUT_MODES } from '../../Data/dc/inputModes';
 
 export default function GeneralSettingsPage() {
   const [settings, setSettings] = useState<GeneralSettings | null>(null);
@@ -31,15 +32,23 @@ export default function GeneralSettingsPage() {
       <h1 className="tw-text-lg tw-font-semibold">General Settings</h1>
       <label className="tw-block">
         <span className="tw-mr-2">Input mode</span>
-        <input
+        <span className="tw-block tw-text-xs tw-text-slate-400 tw-mb-1">
+          The console/protocol the controller emulates over USB.
+        </span>
+        <select
           data-testid="input-mode"
-          type="number"
           className="tw-border tw-rounded tw-px-2 tw-py-1 tw-text-black"
-          value={settings.inputMode}
+          value={String(settings.inputMode)}
           onChange={(e) =>
             setSettings({ ...settings, inputMode: Number(e.target.value) })
           }
-        />
+        >
+          {INPUT_MODES.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
+          ))}
+        </select>
       </label>
       <button
         data-testid="save-settings"

@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { Nav, NavDropdown, Navbar, Button, Modal } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../Contexts/AppContext';
 import FormSelect from './FormSelect';
@@ -45,6 +45,14 @@ const Navigation = () => {
 
 	const { t } = useTranslation('');
 
+	// D_C_Theo interface toggle: switch between the original interface and the
+	// new D_C_Theo section. Scales to swap the whole nav as more /dc/* pages land.
+	const navigate = useNavigate();
+	const location = useLocation();
+	const inModifiedInterface = location.pathname.startsWith('/dc');
+	const toggleInterface = () =>
+		navigate(inModifiedInterface ? '/' : '/dc/settings');
+
 	// eventKey prop is required on NavLink components in order for mobile menu
 	// to autoclose, so just auto increment as we build the menu
 	let eventKey = 0;
@@ -54,11 +62,28 @@ const Navigation = () => {
 			<Navbar.Brand title={`GP2040-CE ${t('Navigation:home-label')}`}>
 				<Nav.Link as={NavLink} to="/" eventKey={eventKey++}>
 					<img
-						src="images/logo.png"
+						src="/images/logo.png"
 						className="title-logo"
 						alt="GP2040-CE logo"
 					/>
 				</Nav.Link>
+				<button
+					type="button"
+					onClick={toggleInterface}
+					aria-pressed={inModifiedInterface}
+					title={
+						inModifiedInterface
+							? 'Switch to the original interface'
+							: 'Switch to the D_C_Theo interface'
+					}
+					className={`tw-ml-1 tw-align-middle tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-transition-colors ${
+						inModifiedInterface
+							? 'tw-border-sky-600 tw-bg-sky-600 tw-text-white'
+							: 'tw-border-sky-500 tw-bg-transparent tw-text-sky-300'
+					}`}
+				>
+					D_C_Theo
+				</button>
 			</Navbar.Brand>
 			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 			<Navbar.Collapse id="basic-navbar-nav">

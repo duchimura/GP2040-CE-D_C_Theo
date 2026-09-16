@@ -1,5 +1,6 @@
 // @ts-expect-error - WebApi.js is untyped JS
 import WebApi from '../../Services/WebApi';
+import { isValidInputMode } from '../../Data/dc/inputModes';
 
 const { getGamepadOptions, setGamepadOptions } = WebApi;
 
@@ -36,8 +37,8 @@ export async function loadGeneralSettings(
 export function validateGeneralSettings(s: GeneralSettings): string[] {
   const errors: string[] = [];
   const isNonNegInt = (n: number) => Number.isInteger(n) && n >= 0;
-  if (!isNonNegInt(s.inputMode) || s.inputMode > 13)
-    errors.push('inputMode must be an integer 0–13');
+  if (!isValidInputMode(s.inputMode))
+    errors.push('inputMode must be a valid GP2040-CE input mode');
   if (!isNonNegInt(s.dpadMode))
     errors.push('dpadMode must be a non-negative integer');
   if (!isNonNegInt(s.socdMode))

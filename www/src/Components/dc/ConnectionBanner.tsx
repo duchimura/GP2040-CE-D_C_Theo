@@ -22,7 +22,7 @@ export default function ConnectionBanner() {
       data-testid="connection-banner"
       data-status={status}
       role="status"
-      className={`tw-w-full tw-px-4 tw-py-2 tw-text-sm ${STATUS_CLASS[status]}`}
+      className={`tw-w-full tw-mb-4 tw-px-4 tw-py-2 tw-text-sm ${STATUS_CLASS[status]}`}
     >
       {MESSAGES[status]}
     </div>
