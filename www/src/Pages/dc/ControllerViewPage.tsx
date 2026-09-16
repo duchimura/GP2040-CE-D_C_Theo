@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppContext } from '../../Contexts/AppContext';
 import { BUTTONS } from '../../Data/Buttons';
 import {
@@ -8,14 +9,16 @@ import {
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
-import LayoutStyleSelector, {
+import LayoutStyleSelector from '../../Components/dc/LayoutStyleSelector';
+import {
   readSavedLayoutStyle,
   saveLayoutStyle,
-} from '../../Components/dc/LayoutStyleSelector';
+} from '../../Components/dc/layoutStylePreference';
 import type { LayoutStyle } from '../../Data/dc/layouts';
 import type { LayoutButtonKey } from '../../Data/dc/gpioActions';
 
 export default function ControllerViewPage() {
+  const { t } = useTranslation('DC');
   const [mapping, setMapping] = useState<MappedButton[] | null>(null);
   const [style, setStyle] = useState<LayoutStyle>(
     readSavedLayoutStyle() ?? 'leverless',
@@ -45,7 +48,7 @@ export default function ControllerViewPage() {
   if (mapping === null) {
     return (
       <div data-testid="ctrl-waiting" className="tw-p-4">
-        Waiting for controller…
+        {t('waiting-for-controller')}
       </div>
     );
   }
@@ -53,12 +56,11 @@ export default function ControllerViewPage() {
   return (
     <div className="tw-p-4 tw-space-y-4">
       <div className="tw-flex tw-items-center tw-justify-between">
-        <h1 className="tw-text-lg tw-font-semibold">Controller</h1>
+        <h1 className="tw-text-lg tw-font-semibold">{t('controller-header')}</h1>
         <LayoutStyleSelector value={style} onChange={onStyleChange} />
       </div>
       <p className="tw-text-sm tw-text-slate-400">
-        Each button shows its label and GPIO pin. Press a button on your
-        controller to light it up here.
+        {t('controller-description')}
       </p>
       <div className="tw-flex tw-flex-col tw-gap-4 lg:tw-flex-row lg:tw-items-start">
         <div className="tw-flex-1">

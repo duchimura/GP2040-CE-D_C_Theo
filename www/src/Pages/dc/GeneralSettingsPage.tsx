@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   loadGeneralSettings,
   saveGeneralSettings,
@@ -7,33 +8,36 @@ import {
 import { INPUT_MODES } from '../../Data/dc/inputModes';
 
 export default function GeneralSettingsPage() {
+  const { t } = useTranslation('DC');
   const [settings, setSettings] = useState<GeneralSettings | null>(null);
   const [status, setStatus] = useState<string>('');
 
   useEffect(() => {
     loadGeneralSettings()
       .then(setSettings)
-      .catch(() => setStatus('Load failed'));
-  }, []);
+      .catch(() => setStatus(t('load-failed')));
+  }, [t]);
 
-  if (!settings) return <div className="tw-p-4">Loading…</div>;
+  if (!settings) return <div className="tw-p-4">{t('loading')}</div>;
 
   const onSave = async () => {
     try {
       await saveGeneralSettings(settings);
-      setStatus('Saved');
+      setStatus(t('saved'));
     } catch {
-      setStatus('Save failed');
+      setStatus(t('save-failed'));
     }
   };
 
   return (
     <div className="tw-p-4 tw-space-y-4">
-      <h1 className="tw-text-lg tw-font-semibold">General Settings</h1>
+      <h1 className="tw-text-lg tw-font-semibold">
+        {t('general-settings-header')}
+      </h1>
       <label className="tw-block">
-        <span className="tw-mr-2">Input mode</span>
+        <span className="tw-mr-2">{t('input-mode-label')}</span>
         <span className="tw-block tw-text-xs tw-text-slate-400 tw-mb-1">
-          The console/protocol the controller emulates over USB.
+          {t('input-mode-help')}
         </span>
         <select
           data-testid="input-mode"
@@ -55,7 +59,7 @@ export default function GeneralSettingsPage() {
         className="tw-bg-sky-600 tw-text-white tw-rounded tw-px-3 tw-py-1"
         onClick={onSave}
       >
-        Save
+        {t('save')}
       </button>
       {status && <div data-testid="save-status">{status}</div>}
     </div>

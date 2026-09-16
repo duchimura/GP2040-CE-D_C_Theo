@@ -81,8 +81,8 @@ const Navigation = () => {
 					aria-pressed={inModifiedInterface}
 					title={
 						inModifiedInterface
-							? 'Switch to the original interface'
-							: 'Switch to the D_C_Theo interface'
+							? t('DC:switch-to-original')
+							: t('DC:switch-to-dc')
 					}
 					className={`tw-ml-2 tw-shrink-0 tw-rounded tw-border tw-px-2 tw-py-0.5 tw-text-xs tw-font-semibold tw-leading-none tw-transition-colors ${
 						inModifiedInterface
@@ -90,7 +90,7 @@ const Navigation = () => {
 							: 'tw-border-sky-500 tw-bg-transparent tw-text-sky-300'
 					}`}
 				>
-					D_C_Theo Version
+					{t('DC:interface-badge')}
 				</button>
 			</Navbar.Brand>
 			<Navbar.Toggle aria-controls="responsive-navbar-nav" />
