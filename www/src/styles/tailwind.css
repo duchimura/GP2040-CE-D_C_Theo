@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --dc-bg: #0f172a;
+  --dc-surface: #1e293b;
+  --dc-text: #e2e8f0;
+  --dc-accent: #38bdf8;
+}
