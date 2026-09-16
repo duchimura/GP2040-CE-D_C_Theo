@@ -1,5 +1,7 @@
 // @ts-expect-error - WebApi.js is untyped JS
-import { getGamepadOptions, setGamepadOptions } from '../../Services/WebApi';
+import WebApi from '../../Services/WebApi';
+
+const { getGamepadOptions, setGamepadOptions } = WebApi;
 
 export type GeneralSettings = {
   inputMode: number;

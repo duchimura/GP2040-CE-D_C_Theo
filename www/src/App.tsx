@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AppContextProvider } from './Contexts/AppContext';
 
 import Navigation from './Components/Navigation';
+import ConnectionBanner from './Components/dc/ConnectionBanner';
+import GeneralSettingsPage from './Pages/dc/GeneralSettingsPage';
 
 import HomePage from './Pages/HomePage';
 import PinMappingPage from './Pages/PinMapping';
@@ -23,11 +25,13 @@ const App = () => {
 	return (
 		<AppContextProvider>
 			<Router>
+				<ConnectionBanner />
 				<Navigation />
 				<div className="body-content container-lg">
 					<Routes>
 						<Route path="/" element={<HomePage />} />
 						<Route path="/settings" element={<SettingsPage />} />
+						<Route path="/dc/settings" element={<GeneralSettingsPage />} />
 						<Route path="/pin-mapping" element={<PinMappingPage />} />
 						<Route
 							path="/boot-mode-mapping"
