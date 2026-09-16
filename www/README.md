@@ -1,5 +1,9 @@
 # GP2040-CE Web Configurator
 
+> **GP2040-CE-D_C_Theo** — a redesigned configurator UI (fork of GP2040-CE).
+> Phase 0 design: `docs/superpowers/specs/2026-09-16-gp2040-ce-dc-theo-phase0-design.md`
+> Phase 0 plan:   `docs/superpowers/plans/2026-09-16-gp2040-ce-dc-theo-phase0.md`
+
 Simple web application for gamepad configuration.
 
 ## Requirements

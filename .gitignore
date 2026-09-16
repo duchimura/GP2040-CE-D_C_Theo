@@ -24,3 +24,6 @@ www/src_gen/enums.ts
 
 # Language Server config
 .clangd
+
+# Generated UI build artifacts
+www/build/
