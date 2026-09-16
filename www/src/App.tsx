@@ -4,6 +4,7 @@ import { AppContextProvider } from './Contexts/AppContext';
 
 import Navigation from './Components/Navigation';
 import ConnectionBanner from './Components/dc/ConnectionBanner';
+import { useConnectionMonitor } from './Hooks/dc/useConnectionMonitor';
 import GeneralSettingsPage from './Pages/dc/GeneralSettingsPage';
 
 import HomePage from './Pages/HomePage';
@@ -22,12 +23,13 @@ import './App.scss';
 import BootModeMappingPage from './Pages/BootModeMapping';
 
 const App = () => {
+	useConnectionMonitor();
 	return (
 		<AppContextProvider>
 			<Router>
-				<ConnectionBanner />
 				<Navigation />
 				<div className="body-content container-lg">
+					<ConnectionBanner />
 					<Routes>
 						<Route path="/" element={<HomePage />} />
 						<Route path="/settings" element={<SettingsPage />} />

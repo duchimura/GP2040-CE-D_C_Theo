@@ -30,6 +30,15 @@ describe('loadGeneralSettings', () => {
     const s = await loadGeneralSettings(api);
     expect(s).toEqual({ inputMode: 4, dpadMode: 1, socdMode: 2 });
   });
+
+  it('passes a setLoading callback (stock WebApi requires one)', async () => {
+    const api = {
+      getGamepadOptions: vi.fn().mockResolvedValue({ inputMode: 0, dpadMode: 0, socdMode: 0 }),
+      setGamepadOptions: vi.fn(),
+    };
+    await loadGeneralSettings(api);
+    expect(api.getGamepadOptions).toHaveBeenCalledWith(expect.any(Function));
+  });
 });
 
 describe('saveGeneralSettings', () => {

@@ -10,16 +10,22 @@ export type GeneralSettings = {
 };
 
 type GamepadApi = {
-  getGamepadOptions: (...args: unknown[]) => Promise<Record<string, number>>;
+  // The stock WebApi.getGamepadOptions REQUIRES a setLoading callback — it calls
+  // setLoading(true) unconditionally, so we always pass one (a no-op by default).
+  getGamepadOptions: (
+    setLoading?: (loading: boolean) => void,
+  ) => Promise<Record<string, number>>;
   setGamepadOptions: (options: Record<string, number>) => Promise<unknown>;
 };
 
 const defaultApi: GamepadApi = { getGamepadOptions, setGamepadOptions };
 
+const noop = () => {};
+
 export async function loadGeneralSettings(
   api: GamepadApi = defaultApi,
 ): Promise<GeneralSettings> {
-  const data = await api.getGamepadOptions();
+  const data = await api.getGamepadOptions(noop);
   return {
     inputMode: data.inputMode,
     dpadMode: data.dpadMode,
