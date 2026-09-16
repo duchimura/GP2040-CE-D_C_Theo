@@ -7,6 +7,9 @@ type Props = {
   mapping: MappedButton[];
   heldPins: number[];
   labelFor: (buttonKey: LayoutButtonKey) => string;
+  onButtonClick?: (buttonKey: LayoutButtonKey) => void;
+  overrideLabel?: (buttonKey: LayoutButtonKey) => string | undefined;
+  pendingKeys?: Set<LayoutButtonKey>;
 };
 
 type ButtonColors = {
@@ -34,6 +37,9 @@ export default function ControllerLayout({
   mapping,
   heldPins,
   labelFor,
+  onButtonClick,
+  overrideLabel,
+  pendingKeys,
 }: Props) {
   const layout = LAYOUTS[layoutStyle];
   const byKey = new Map(mapping.map((m) => [m.buttonKey, m]));
@@ -49,19 +55,25 @@ export default function ControllerLayout({
         const mapped = byKey.get(p.key);
         const held = mapped ? heldPins.includes(mapped.pin) : false;
         const c = colorsFor(Boolean(mapped), held);
+        const clickable = Boolean(mapped) && Boolean(onButtonClick);
+        const pending = pendingKeys?.has(p.key) ?? false;
+        const label = overrideLabel?.(p.key) ?? labelFor(p.key);
         return (
           <g
             key={p.key}
             data-testid={`ctrl-btn-${p.key}`}
             data-held={held ? 'true' : 'false'}
+            data-pending={pending ? 'true' : 'false'}
+            onClick={clickable ? () => onButtonClick?.(p.key) : undefined}
+            style={clickable ? { cursor: 'pointer' } : undefined}
           >
             <circle
               cx={p.x}
               cy={p.y}
               r={p.r}
               fill={c.fill}
-              stroke={c.stroke}
-              strokeWidth={2}
+              stroke={pending ? '#f59e0b' : c.stroke}
+              strokeWidth={pending ? 3 : 2}
             />
             <text
               x={p.x}
@@ -70,7 +82,7 @@ export default function ControllerLayout({
               fill={c.label}
               style={{ fontSize: '13px', fontWeight: 600 }}
             >
-              {labelFor(p.key)}
+              {label}
             </text>
             {mapped && (
               <text

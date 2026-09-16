@@ -39,4 +39,14 @@ export default {
 	'interface-badge': 'D_C_Theo Version',
 	'switch-to-original': 'Switch to the original interface',
 	'switch-to-dc': 'Switch to the D_C_Theo interface',
+	// Remap mode
+	remap: 'Remap',
+	'remap-exit': 'Done',
+	'remap-save': 'Save',
+	'remap-saving': 'Saving…',
+	'remap-revert': 'Revert',
+	'remap-pending': '{{count}} pending change(s)',
+	'remap-none-pending': 'No changes',
+	'remap-error': 'Save failed — try again',
+	'remap-select-hint': 'Select a function, then click the buttons to assign it.',
 };
