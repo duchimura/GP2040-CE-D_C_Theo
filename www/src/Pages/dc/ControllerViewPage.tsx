@@ -1,21 +1,30 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { AppContext } from '../../Contexts/AppContext';
 import { BUTTONS } from '../../Data/Buttons';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useProfilesView } from '../../Hooks/dc/useProfilesView';
+import { useConnectionStore } from '../../Store/useConnectionStore';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import FunctionList from '../../Components/dc/FunctionList';
 import RemapBar from '../../Components/dc/RemapBar';
 import ProfilesBar from '../../Components/dc/ProfilesBar';
 import LayoutStyleSelector from '../../Components/dc/LayoutStyleSelector';
+import MirroredToggle from '../../Components/dc/MirroredToggle';
 import {
   readSavedLayoutStyle,
   saveLayoutStyle,
 } from '../../Components/dc/layoutStylePreference';
-import { LAYOUTS, type LayoutStyle } from '../../Data/dc/layouts';
 import {
+  readSavedMirrored,
+  saveMirrored,
+} from '../../Components/dc/mirroredPreference';
+import { getLayout, type LayoutStyle } from '../../Data/dc/layouts';
+import { computeExtraPlacements } from '../../Data/dc/extraButtons';
+import {
+  ASSIGNABLE_FUNCTIONS,
   actionForButtonKey,
   buttonKeyForAction,
   type LayoutButtonKey,
@@ -23,16 +32,24 @@ import {
 
 export default function ControllerViewPage() {
   const { t } = useTranslation('DC');
+  const location = useLocation();
+  const isPinMappingRoute = location.pathname === '/pin-mapping';
   const view = useProfilesView();
   const [style, setStyle] = useState<LayoutStyle>(
     readSavedLayoutStyle() ?? 'leverless',
   );
-  const [remapMode, setRemapMode] = useState(false);
+  const [mirrored, setMirrored] = useState<boolean>(readSavedMirrored());
+  // The GPIO Pin Configurator route is specifically for remapping, so start
+  // there with remap already on rather than making that an extra click.
+  const [remapMode, setRemapMode] = useState(isPinMappingRoute);
   const [selectedFn, setSelectedFn] = useState<LayoutButtonKey | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Pause identify polling while remapping so clicks/highlights stay unambiguous.
-  const heldPins = useHeldPinsMonitor(!remapMode);
+  // Keep identify polling on during remap too, so pressing a button on the
+  // real controller lights up its slot while you're picking which one to
+  // remap — just pause across the actual save request so it doesn't compete
+  // with that call on the board's single-connection httpd.
+  const heldPins = useHeldPinsMonitor(!saving);
 
   const appContext = useContext(AppContext) as {
     buttonLabels?: { buttonLabelType?: string };
@@ -41,44 +58,101 @@ export default function ControllerViewPage() {
   const labelSet =
     (BUTTONS as Record<string, Record<string, string>>)[labelSetKey] ??
     (BUTTONS as Record<string, Record<string, string>>).gp2040;
-  const labelFor = (key: LayoutButtonKey): string => labelSet[key] ?? key;
+  const labelFor = (key: string): string => labelSet[key] ?? key;
 
   useEffect(() => {
     view.load();
   }, []);
+
+  // If that first attempt fails (e.g. the board isn't reachable yet), retry
+  // silently whenever the connection banner reports we're connected — no
+  // manual retry button, matching how the page just resolves on its own once
+  // the controller is actually there. Only while still empty: once a load has
+  // succeeded, a later reconnect shouldn't clobber in-progress remap edits.
+  const connectionStatus = useConnectionStore((s) => s.status);
+  useEffect(() => {
+    if (connectionStatus === 'connected' && view.profiles.length === 0) {
+      view.load();
+    }
+  }, [connectionStatus]);
+
+  // Which physical board this is — picks the right pin wiring for the fixed
+  // 12 slots below (see Data/dc/layouts.ts) so the same D_C_Theo build works
+  // correctly across different manufacturers' boards, not just the one it
+  // was tuned against.
+  const boardConfig = useConnectionStore((s) => s.controllerInfo?.boardConfig);
+
+  // The initial useState above only covers a direct/full-page load of
+  // /pin-mapping — navigating here in-app re-renders this same component
+  // instance rather than remounting it, so react to the route itself
+  // switching to (or away from) it.
+  useEffect(() => {
+    setRemapMode(isPinMappingRoute);
+  }, [isPinMappingRoute]);
 
   const onStyleChange = (s: LayoutStyle) => {
     setStyle(s);
     saveLayoutStyle(s);
   };
 
-  // Each slot's pin is a fixed hardware fact (from LAYOUTS), not something derived
-  // from the profile — a pin can be reassigned to any function (including one
-  // another pin already has), so identity must never be keyed by function name.
-  const pinByKey = useMemo(
-    () => new Map(LAYOUTS[style].placements.map((p) => [p.key, p.defaultPin])),
-    [style],
+  const onMirroredChange = (m: boolean) => {
+    setMirrored(m);
+    saveMirrored(m);
+  };
+
+  // Buttons wired beyond the standard 12 (8-button cluster + 4 directions) —
+  // detected from the profile's actual pin/action assignments, not hardcoded,
+  // so any board's extra buttons show up automatically.
+  const extraPlacements = useMemo(
+    () => computeExtraPlacements(style, view.currentActions, boardConfig, mirrored),
+    [style, view.currentActions, boardConfig, mirrored],
   );
 
-  const overrideLabel = (key: LayoutButtonKey): string | undefined => {
+  // Each slot's pin is a fixed hardware fact (from getLayout/extraPlacements),
+  // not something derived from the profile — a pin can be reassigned to any
+  // function (including one another pin already has), so identity must never
+  // be keyed by function name.
+  const pinByKey = useMemo(
+    () =>
+      new Map(
+        [...getLayout(style, boardConfig, mirrored).placements, ...extraPlacements].map(
+          (p) => [p.key, p.defaultPin],
+        ),
+      ),
+    [style, boardConfig, mirrored, extraPlacements],
+  );
+
+  const overrideLabel = (key: string): string | undefined => {
     if (!remapMode) return undefined;
     const pin = pinByKey.get(key);
     if (pin === undefined) return undefined;
     const workingKey = buttonKeyForAction(view.currentActions[pin]);
-    return labelFor(workingKey ?? key);
+    // No override for an unresolved working function — ControllerLayout's own
+    // fallback then applies (no made-up label, just the pin number for extras).
+    return workingKey ? labelFor(workingKey) : undefined;
   };
 
-  const pendingKeySet = new Set<LayoutButtonKey>(
+  const pendingKeySet = new Set<string>(
     Array.from(pinByKey.entries())
       .filter(([, pin]) => view.currentActions[pin] !== view.snapshotActions[pin])
       .map(([key]) => key),
   );
 
-  const onButtonClick = (key: LayoutButtonKey) => {
+  const onButtonClick = (key: string) => {
     if (!selectedFn) return;
     const pin = pinByKey.get(key);
     if (pin === undefined) return;
     view.assignFunctionToPin(pin, actionForButtonKey(selectedFn));
+  };
+
+  // Dragging a function from the list straight onto a button — same effect
+  // as select-then-click, in one gesture. Click-to-select-then-click stays
+  // fully intact via onButtonClick above.
+  const onFunctionDrop = (key: string, functionKey: string) => {
+    if (!ASSIGNABLE_FUNCTIONS.includes(functionKey as LayoutButtonKey)) return;
+    const pin = pinByKey.get(key);
+    if (pin === undefined) return;
+    view.assignFunctionToPin(pin, actionForButtonKey(functionKey as LayoutButtonKey));
   };
 
   const onSave = () => {
@@ -100,14 +174,15 @@ export default function ControllerViewPage() {
         <h1 className="tw-text-lg tw-font-semibold">{t('controller-header')}</h1>
         <div className="tw-flex tw-items-center tw-gap-2">
           <LayoutStyleSelector value={style} onChange={onStyleChange} />
+          <MirroredToggle value={mirrored} onChange={onMirroredChange} />
           <button
             type="button"
             data-testid="remap-toggle"
             onClick={remapMode ? () => setRemapMode(false) : () => setRemapMode(true)}
-            className={`tw-rounded tw-px-3 tw-py-1 tw-text-sm ${
+            className={`tw-rounded tw-border tw-border-slate-300 dark:tw-border-slate-600 tw-px-3 tw-py-1 tw-text-sm ${
               remapMode
-                ? 'tw-bg-slate-700 tw-text-slate-200'
-                : 'tw-bg-sky-600 tw-text-white'
+                ? 'tw-bg-sky-600 tw-text-white'
+                : 'tw-bg-transparent tw-text-slate-600 dark:tw-text-slate-300'
             }`}
           >
             {remapMode ? t('remap-exit') : t('remap')}
@@ -115,16 +190,18 @@ export default function ControllerViewPage() {
         </div>
       </div>
 
-      <ProfilesBar
-        profiles={view.profiles}
-        selectedIndex={view.selectedIndex}
-        maxProfiles={view.maxProfiles}
-        onSelect={view.setSelectedIndex}
-        onRename={view.rename}
-        onAdd={view.addProfile}
-        onToggleEnabled={view.toggleEnabled}
-        onCopyFromBase={view.copyFromBase}
-      />
+      {(remapMode || isPinMappingRoute) && (
+        <ProfilesBar
+          profiles={view.profiles}
+          selectedIndex={view.selectedIndex}
+          maxProfiles={view.maxProfiles}
+          onSelect={view.setSelectedIndex}
+          onRename={view.rename}
+          onAdd={view.addProfile}
+          onToggleEnabled={view.toggleEnabled}
+          onCopyFromBase={view.copyFromBase}
+        />
+      )}
 
       {remapMode ? (
         <div className="tw-space-y-3">
@@ -147,15 +224,19 @@ export default function ControllerViewPage() {
               onSelect={setSelectedFn}
               labelFor={labelFor}
             />
-            <div className="tw-flex-1">
+            <div className="tw-flex-1 tw-flex tw-justify-center">
               <ControllerLayout
                 layoutStyle={style}
                 mapping={view.snapshotMapping}
-                heldPins={[]}
+                heldPins={heldPins}
                 labelFor={labelFor}
                 onButtonClick={onButtonClick}
+                onFunctionDrop={onFunctionDrop}
                 overrideLabel={overrideLabel}
                 pendingKeys={pendingKeySet}
+                extraPlacements={extraPlacements}
+                boardConfig={boardConfig}
+                mirrored={mirrored}
               />
             </div>
           </div>
@@ -166,15 +247,18 @@ export default function ControllerViewPage() {
             {t('controller-description')}
           </p>
           <div className="tw-flex tw-flex-col tw-gap-4 lg:tw-flex-row lg:tw-items-start">
-            <div className="tw-flex-1">
+            <div className="tw-flex-1 tw-flex tw-justify-center">
               <ControllerLayout
                 layoutStyle={style}
                 mapping={view.currentMapping}
                 heldPins={heldPins}
                 labelFor={labelFor}
+                extraPlacements={extraPlacements}
+                boardConfig={boardConfig}
+                mirrored={mirrored}
               />
             </div>
-            <SystemStatsPanel />
+            {!isPinMappingRoute && <SystemStatsPanel />}
           </div>
         </>
       )}

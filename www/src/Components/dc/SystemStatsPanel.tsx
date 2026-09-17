@@ -29,7 +29,7 @@ export default function SystemStatsPanel() {
       </h2>
 
       <div className="tw-mb-3">
-        <div className="tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">{t('version')}</div>
+        <div className="tw-text-lg tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">{t('version')}</div>
         <div>
           {boardConfigProperties.label
             ? t('version-value', {
@@ -49,7 +49,7 @@ export default function SystemStatsPanel() {
       </div>
 
       <div>
-        <div className="tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">
+        <div className="tw-text-lg tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">
           {t('memory-header')}
         </div>
         <div>

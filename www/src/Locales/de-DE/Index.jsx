@@ -13,8 +13,10 @@ import CaptureButton from './CaptureButton';
 import WiiAddon from './Addons/WiiAddon';
 import InputMacroAddon from './InputMacroAddon';
 import LedConfigPage from './LedConfigPage';
+import DC from './DC';
 
 export default {
+	DC,
 	LedConfigPage,
 	Common,
 	HomePage,

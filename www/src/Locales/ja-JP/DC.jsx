@@ -1,0 +1,64 @@
+export default {
+	// Controller view
+	'controller-header': 'コントローラー',
+	'controller-description':
+		'各ボタンにはラベルと GPIO ピンが表示されます。コントローラーのボタンを押すとここが点灯します。',
+	'waiting-for-controller': 'コントローラーを待っています…',
+	// Layout selector
+	'layout-leverless': 'Leverless',
+	'layout-arcade': 'アーケードスティック',
+	'layout-mirrored': 'ミラー',
+	// General settings
+	'general-settings-header': '一般設定',
+	'input-mode-label': '入力モード',
+	'input-mode-help': 'コントローラーが USB 経由でエミュレートするコンソール/プロトコル。',
+	save: '保存',
+	saved: '保存しました',
+	'save-failed': '保存に失敗しました',
+	'load-failed': '読み込みに失敗しました',
+	loading: '読込中…',
+	// Connection banner
+	'conn-searching': 'コントローラーを検索しています…',
+	'conn-connected': 'コントローラー接続済み',
+	'conn-connected-named': 'コントローラー接続済み: {{name}}',
+	'conn-connected-full-prefix': '接続中のコントローラー:',
+	'conn-connected-full-details-base': '{{label}} — GP2040-CE {{version}}',
+	'conn-connected-full-details-build': 'ビルド {{build}}',
+	'conn-lost':
+		'コントローラーに接続できません。USB で接続し、http://192.168.7.1 を開いてください',
+	// System stats
+	'system-stats-header': 'システム統計',
+	version: 'バージョン',
+	'version-value': '{{label}}（{{file}}.uf2）',
+	current: '現在: {{version}}',
+	latest: '最新: {{version}}',
+	architecture: 'アーキテクチャ: {{value}}',
+	'build-type': 'ビルドタイプ: {{value}}',
+	'memory-header': 'メモリ（KB）',
+	'memory-flash': 'フラッシュ: {{used}} / {{total}}（{{pct}}%）',
+	'memory-heap': 'ヒープ: {{used}} / {{total}}（{{pct}}%）',
+	'memory-static': '静的割り当て: {{value}}',
+	'memory-board': 'ボードフラッシュ: {{value}}',
+	none: '—',
+	// Interface toggle (Navigation)
+	'interface-badge': 'D_C_Theo エディション',
+	'switch-to-original': '元のインターフェースに切り替える',
+	'switch-to-dc': 'D_C_Theo インターフェースに切り替える',
+	// Remap mode
+	remap: '再割り当て',
+	'remap-exit': '完了',
+	'remap-save': '保存',
+	'remap-saving': '保存中…',
+	'remap-revert': '元に戻す',
+	'remap-pending': '{{count}} 件の変更が保留中',
+	'remap-none-pending': '変更なし',
+	'remap-error': '保存に失敗しました — もう一度お試しください',
+	'remap-select-hint': '機能を選択してから、ボタンをクリックして割り当ててください。',
+	// Profiles
+	profiles: 'プロファイル',
+	'profile-rename': 'プロファイル名',
+	'profile-add': 'プロファイルを追加',
+	'profile-enabled': '有効',
+	'profile-copy-base': 'ベースからコピー',
+	'profile-n': 'プロファイル {{n}}',
+};

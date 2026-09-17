@@ -13,8 +13,10 @@ import AddonsConfig from './AddonsConfig';
 import CaptureButton from './CaptureButton';
 import InputMacroAddon from './InputMacroAddon';
 import LayoutConfig from './LayoutConfig';
+import DC from './DC';
 
 export default {
+	DC,
 	Common,
 	HomePage,
 	Navigation,

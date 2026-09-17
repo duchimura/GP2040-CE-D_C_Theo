@@ -7,6 +7,34 @@ import { profileToMappedButtons, actionsByPin } from '../../Data/dc/profileMappi
 
 const pinKey = (pin: number) => `pin${String(pin).padStart(2, '0')}`;
 
+// The real board's httpd has a small, finite connection pool and has been
+// observed to go fully unresponsive (no reply, no connection error) rather
+// than fail cleanly — fetchProfiles' underlying requests carry no timeout of
+// their own, so without a bound here a wedged board leaves the UI stuck on
+// "waiting for controller" forever with no way to tell the user or retry.
+// This only gives up client-side (nothing is aborted): if the request does
+// eventually come back, the store still picks it up normally.
+export const PROFILE_LOAD_TIMEOUT_MS = 8000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(
+      () => reject(new Error('Timed out waiting for the controller')),
+      ms,
+    );
+    promise.then(
+      (value) => {
+        clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timeoutId);
+        reject(err);
+      },
+    );
+  });
+}
+
 export function useProfilesView() {
   const profiles = useProfilesStore((s) => s.profiles);
   const loading = useProfilesStore((s) => s.loadingProfiles);
@@ -32,7 +60,11 @@ export function useProfilesView() {
   const load = useCallback(async () => {
     setError(false);
     try {
-      await fetchProfiles();
+      // fetchProfiles is typed `() => void` in useProfilesStore (stock),
+      // though it's actually async — Promise.resolve(...) both satisfies
+      // withTimeout's Promise<T> parameter and correctly flattens the real
+      // promise at runtime.
+      await withTimeout(Promise.resolve(fetchProfiles()), PROFILE_LOAD_TIMEOUT_MS);
       takeSnapshot();
     } catch {
       setError(true);
@@ -52,7 +84,7 @@ export function useProfilesView() {
   const revert = useCallback(async () => {
     setError(false);
     try {
-      await fetchProfiles();
+      await withTimeout(Promise.resolve(fetchProfiles()), PROFILE_LOAD_TIMEOUT_MS);
       takeSnapshot();
     } catch {
       setError(true);

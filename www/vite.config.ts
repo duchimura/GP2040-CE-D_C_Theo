@@ -5,6 +5,11 @@ import path from "path";
 // import dev host for wsl2
 const host = process.env.VITE_DEV_HOST || 'localhost';
 
+// dev-only API target (mock server or a real board's IP); proxied below so the
+// browser only ever sees same-origin requests and never triggers a CORS
+// preflight (the GP2040 firmware httpd doesn't answer OPTIONS requests).
+const apiProxyTarget = process.env.VITE_DEV_BASE_URL || 'http://localhost:8080';
+
 // https://vitejs.dev/config/
 export default defineConfig({
 	build: {
@@ -15,6 +20,12 @@ export default defineConfig({
 		host: host,
 		open: true,
 		port: 3000,
+		proxy: {
+			"/api": {
+				target: apiProxyTarget,
+				changeOrigin: true,
+			},
+		},
 	},
 	plugins: [react()],
 	resolve: {

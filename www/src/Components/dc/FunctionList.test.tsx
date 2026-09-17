@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import FunctionList from './FunctionList';
 
@@ -17,5 +17,14 @@ describe('FunctionList', () => {
     render(<FunctionList selected="B2" onSelect={() => {}} labelFor={labelFor} />);
     expect(screen.getByTestId('fn-B2')).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByTestId('fn-B1')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('is draggable and puts its function key on the drag payload', () => {
+    render(<FunctionList selected={null} onSelect={() => {}} labelFor={labelFor} />);
+    const b1 = screen.getByTestId('fn-B1');
+    expect(b1).toHaveAttribute('draggable', 'true');
+    const setData = vi.fn();
+    fireEvent.dragStart(b1, { dataTransfer: { setData, effectAllowed: '' } });
+    expect(setData).toHaveBeenCalledWith('text/plain', 'B1');
   });
 });

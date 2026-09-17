@@ -2,10 +2,12 @@ import { set } from 'lodash';
 import Http from './Http';
 import { hexToInt, rgbIntToHex } from './Utilities';
 
-export const baseUrl =
-	process.env.NODE_ENV === 'production'
-		? ''
-		: import.meta.env.VITE_DEV_BASE_URL;
+// Requests always go to '/api/...' relative to the current origin. In dev,
+// Vite's server.proxy (vite.config.ts) forwards that to VITE_DEV_BASE_URL
+// (mock server or a real board) so the browser never makes a cross-origin
+// request — the GP2040 firmware httpd doesn't answer CORS preflight
+// (OPTIONS) requests, which a direct cross-origin fetch would trigger.
+export const baseUrl = '';
 
 export const baseBoardDefinitions = {
 	pico: {

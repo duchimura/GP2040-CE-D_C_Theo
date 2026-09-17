@@ -1,15 +1,32 @@
-import { LAYOUTS, type LayoutStyle } from '../../Data/dc/layouts';
-import type { LayoutButtonKey } from '../../Data/dc/gpioActions';
+import { useState } from 'react';
+import { getLayout, type LayoutStyle, type ButtonPlacement } from '../../Data/dc/layouts';
 import type { MappedButton } from '../../Hooks/dc/useControllerMapping';
 
 type Props = {
   layoutStyle: LayoutStyle;
   mapping: MappedButton[];
   heldPins: number[];
-  labelFor: (buttonKey: LayoutButtonKey) => string;
-  onButtonClick?: (buttonKey: LayoutButtonKey) => void;
-  overrideLabel?: (buttonKey: LayoutButtonKey) => string | undefined;
-  pendingKeys?: Set<LayoutButtonKey>;
+  labelFor: (buttonKey: string) => string;
+  onButtonClick?: (buttonKey: string) => void;
+  // Dropping a function dragged from FunctionList onto a button slot — an
+  // alternative to the select-then-click flow (onButtonClick + the caller's
+  // own "selected function" state), not a replacement for it. Gated by the
+  // same wired/clickable check as onButtonClick, so anything you can click
+  // to remap you can also drag onto.
+  onFunctionDrop?: (buttonKey: string, functionKey: string) => void;
+  overrideLabel?: (buttonKey: string) => string | undefined;
+  pendingKeys?: Set<string>;
+  // Dynamically-detected buttons beyond the standard layout (see
+  // Data/dc/extraButtons.ts), rendered the same way as static placements.
+  extraPlacements?: ButtonPlacement[];
+  // Which physical board's pin wiring to use for the fixed 12 slots (see
+  // Data/dc/layouts.ts) — omit for the default (Pico) wiring.
+  boardConfig?: string;
+  // Mirror the fixed-12 shape for a "southpaw"-style board: the cluster and
+  // directions swap sides and each flips internally (see layouts.ts's
+  // mirrorShape). extraPlacements are computed by the caller and already
+  // reflect this (Data/dc/extraButtons.ts) — this only affects the fixed 12.
+  mirrored?: boolean;
 };
 
 type ButtonColors = {
@@ -38,29 +55,58 @@ export default function ControllerLayout({
   heldPins,
   labelFor,
   onButtonClick,
+  onFunctionDrop,
   overrideLabel,
   pendingKeys,
+  extraPlacements = [],
+  boardConfig,
+  mirrored,
 }: Props) {
-  const layout = LAYOUTS[layoutStyle];
+  const layout = getLayout(layoutStyle, boardConfig, mirrored);
+  const [dragOverKey, setDragOverKey] = useState<string | null>(null);
   // Keyed by pin, not by function name: a placement is a fixed physical position
   // tied to its defaultPin, and two pins can legitimately share a function.
   const byPin = new Map(mapping.map((m) => [m.pin, m]));
+  const allPlacements = [...layout.placements, ...extraPlacements];
+
+  // Fit the viewBox tightly around the actual buttons (static + extra) instead
+  // of the layout's fixed 0,0-origin box — that left a lot of dead space on
+  // the left/top (and wouldn't grow for extra-button rows pushing past the
+  // bottom), which also meant the rendered SVG couldn't fill its container
+  // without stretching that empty margin along with it.
+  const PAD = 16;
+  const left = Math.min(...allPlacements.map((p) => p.x - p.r)) - PAD;
+  const top = Math.min(...allPlacements.map((p) => p.y - p.r)) - PAD;
+  const right = Math.max(...allPlacements.map((p) => p.x + p.r)) + PAD;
+  const bottom = Math.max(...allPlacements.map((p) => p.y + p.r)) + PAD;
+  const viewBox = `${left} ${top} ${right - left} ${bottom - top}`;
 
   return (
     <svg
-      viewBox={layout.viewBox}
-      className="tw-w-full tw-max-w-4xl"
+      viewBox={viewBox}
+      className="tw-w-full"
       role="img"
       aria-label="Controller layout"
     >
-      {layout.placements.map((p) => {
+      {allPlacements.map((p) => {
         const mapped = byPin.get(p.defaultPin);
         const held = mapped ? heldPins.includes(mapped.pin) : false;
-        const c = colorsFor(Boolean(mapped), held);
-        const clickable = Boolean(mapped) && Boolean(onButtonClick);
+        // Extra buttons are wired (their pin was detected as in use), so they
+        // count as assigned/clickable even when their action has no entry in
+        // `mapping` (e.g. a MACRO/TURBO action, which
+        // loadControllerMapping/profileToMappedButtons drop because it has no
+        // fixed layout key).
+        const wired = Boolean(mapped) || p.action !== undefined;
+        const c = colorsFor(wired, held);
+        const clickable = wired && Boolean(onButtonClick);
+        const droppable = wired && Boolean(onFunctionDrop);
         const pending = pendingKeys?.has(p.key) ?? false;
+        const dragOver = droppable && dragOverKey === p.key;
+        // An extra button with no resolvable function (mapped undefined but the
+        // pin is wired) reports just its pin number — no made-up label.
         const label =
-          overrideLabel?.(p.key) ?? labelFor(mapped?.buttonKey ?? p.key);
+          overrideLabel?.(p.key) ??
+          (mapped ? labelFor(mapped.buttonKey) : p.action !== undefined ? '' : labelFor(p.key));
         return (
           <g
             key={p.key}
@@ -69,33 +115,61 @@ export default function ControllerLayout({
             data-pending={pending ? 'true' : 'false'}
             onClick={clickable ? () => onButtonClick?.(p.key) : undefined}
             style={clickable ? { cursor: 'pointer' } : undefined}
+            onDragOver={
+              droppable
+                ? (e) => {
+                    // Required for onDrop to fire at all — browsers default
+                    // to rejecting drops on most elements.
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'copy';
+                    if (dragOverKey !== p.key) setDragOverKey(p.key);
+                  }
+                : undefined
+            }
+            onDragLeave={
+              droppable
+                ? () => setDragOverKey((k) => (k === p.key ? null : k))
+                : undefined
+            }
+            onDrop={
+              droppable
+                ? (e) => {
+                    e.preventDefault();
+                    setDragOverKey(null);
+                    const functionKey = e.dataTransfer.getData('text/plain');
+                    if (functionKey) onFunctionDrop?.(p.key, functionKey);
+                  }
+                : undefined
+            }
           >
             <circle
               cx={p.x}
               cy={p.y}
               r={p.r}
               fill={c.fill}
-              stroke={pending ? '#f59e0b' : c.stroke}
-              strokeWidth={pending ? 3 : 2}
+              stroke={dragOver ? '#f59e0b' : pending ? '#f59e0b' : c.stroke}
+              strokeWidth={dragOver || pending ? 3 : 2}
             />
-            <text
-              x={p.x}
-              y={p.y - 2}
-              textAnchor="middle"
-              fill={c.label}
-              style={{ fontSize: '13px', fontWeight: 600 }}
-            >
-              {label}
-            </text>
-            {mapped && (
+            {label && (
               <text
                 x={p.x}
-                y={p.y + 12}
+                y={p.y - 2}
+                textAnchor="middle"
+                fill={c.label}
+                style={{ fontSize: '13px', fontWeight: 600 }}
+              >
+                {label}
+              </text>
+            )}
+            {wired && (
+              <text
+                x={p.x}
+                y={label ? p.y + 12 : p.y + 4}
                 textAnchor="middle"
                 fill={c.pin}
                 style={{ fontSize: '9px' }}
               >
-                {`Pin ${mapped.pin}`}
+                {`Pin ${mapped?.pin ?? p.defaultPin}`}
               </text>
             )}
           </g>

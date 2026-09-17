@@ -1,0 +1,64 @@
+export default {
+	// Controller view
+	'controller-header': '컨트롤러',
+	'controller-description':
+		'각 버튼에는 라벨과 GPIO 핀이 표시됩니다. 컨트롤러의 버튼을 누르면 여기에서 불이 켜집니다.',
+	'waiting-for-controller': '컨트롤러를 기다리는 중…',
+	// Layout selector
+	'layout-leverless': 'Leverless',
+	'layout-arcade': '아케이드 스틱',
+	'layout-mirrored': '미러',
+	// General settings
+	'general-settings-header': '일반 설정',
+	'input-mode-label': '입력 모드',
+	'input-mode-help': '컨트롤러가 USB를 통해 에뮬레이트하는 콘솔/프로토콜입니다.',
+	save: '저장',
+	saved: '저장됨',
+	'save-failed': '저장 실패',
+	'load-failed': '불러오기 실패',
+	loading: '불러오는 중…',
+	// Connection banner
+	'conn-searching': '컨트롤러를 검색하는 중…',
+	'conn-connected': '컨트롤러 연결됨',
+	'conn-connected-named': '컨트롤러 연결됨: {{name}}',
+	'conn-connected-full-prefix': '연결된 컨트롤러:',
+	'conn-connected-full-details-base': '{{label}} — GP2040-CE {{version}}',
+	'conn-connected-full-details-build': '빌드 {{build}}',
+	'conn-lost':
+		'컨트롤러에 연결할 수 없습니다. USB로 연결한 뒤 http://192.168.7.1 을 여세요',
+	// System stats
+	'system-stats-header': '시스템 통계',
+	version: '버전',
+	'version-value': '{{label}} ({{file}}.uf2)',
+	current: '현재: {{version}}',
+	latest: '최신: {{version}}',
+	architecture: '아키텍처: {{value}}',
+	'build-type': '빌드 유형: {{value}}',
+	'memory-header': '메모리 (KB)',
+	'memory-flash': '플래시: {{used}} / {{total}} ({{pct}}%)',
+	'memory-heap': '힙: {{used}} / {{total}} ({{pct}}%)',
+	'memory-static': '정적 할당: {{value}}',
+	'memory-board': '보드 플래시: {{value}}',
+	none: '—',
+	// Interface toggle (Navigation)
+	'interface-badge': 'D_C_Theo 에디션',
+	'switch-to-original': '원래 인터페이스로 전환',
+	'switch-to-dc': 'D_C_Theo 인터페이스로 전환',
+	// Remap mode
+	remap: '재할당',
+	'remap-exit': '완료',
+	'remap-save': '저장',
+	'remap-saving': '저장 중…',
+	'remap-revert': '되돌리기',
+	'remap-pending': '보류 중인 변경 {{count}}개',
+	'remap-none-pending': '변경 사항 없음',
+	'remap-error': '저장 실패 — 다시 시도하세요',
+	'remap-select-hint': '기능을 선택한 다음 버튼을 클릭하여 할당하세요.',
+	// Profiles
+	profiles: '프로필',
+	'profile-rename': '프로필 이름',
+	'profile-add': '프로필 추가',
+	'profile-enabled': '사용',
+	'profile-copy-base': '기본에서 복사',
+	'profile-n': '프로필 {{n}}',
+};

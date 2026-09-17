@@ -20,8 +20,10 @@ import LayoutConfig from './LayoutConfig';
 import Proto from './Proto/Index';
 import LedConfigPage from './LedConfigPage';
 import BootModeMapping from './BootModeMapping';
+import DC from './DC';
 
 export default {
+	DC,
 	LedConfigPage,
 	Common,
 	HomePage,

@@ -26,7 +26,7 @@ vi.mock('../../Store/useProfilesStore', () => ({
   }),
 }));
 
-import { useProfilesView } from './useProfilesView';
+import { useProfilesView, PROFILE_LOAD_TIMEOUT_MS } from './useProfilesView';
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -59,5 +59,31 @@ describe('useProfilesView', () => {
     });
     expect(store.saveProfiles).toHaveBeenCalled();
     expect(result.current.dirty).toBe(false);
+  });
+
+  it('load surfaces an error instead of hanging forever when the board never responds', async () => {
+    // The real board's httpd has been observed to swallow a request with no
+    // response at all (connection exhausted/wedged) — fetchProfiles then
+    // never settles. Without a bound here, the UI would sit on "waiting for
+    // controller" forever with no way to tell the user or let them retry.
+    vi.useFakeTimers();
+    try {
+      store.fetchProfiles.mockImplementationOnce(() => new Promise(() => {}));
+      const { result } = renderHook(() => useProfilesView());
+
+      let loadPromise: Promise<void>;
+      act(() => {
+        loadPromise = result.current.load();
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(PROFILE_LOAD_TIMEOUT_MS);
+        await loadPromise;
+      });
+
+      expect(result.current.error).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

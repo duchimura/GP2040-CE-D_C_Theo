@@ -9,8 +9,10 @@ import BackupPage from './BackupPage';
 import DisplayConfig from './DisplayConfig';
 import AddonsConfig from './AddonsConfig';
 import LedConfigPage from './LedConfigPage';
+import DC from './DC';
 
 export default {
+	DC,
 	LedConfigPage,
 	Common,
 	HomePage,

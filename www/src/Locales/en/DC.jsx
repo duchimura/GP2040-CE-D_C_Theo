@@ -7,6 +7,7 @@ export default {
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
+	'layout-mirrored': 'Flip',
 	// General settings
 	'general-settings-header': 'General Settings',
 	'input-mode-label': 'Input mode',
@@ -20,6 +21,9 @@ export default {
 	'conn-searching': 'Searching for your controller…',
 	'conn-connected': 'Controller connected',
 	'conn-connected-named': 'Controller connected: {{name}}',
+	'conn-connected-full-prefix': 'Connected Controller :',
+	'conn-connected-full-details-base': '{{label}} — GP2040-CE {{version}}',
+	'conn-connected-full-details-build': 'build {{build}}',
 	'conn-lost':
 		"Can't reach the controller. Plug it in via USB and open http://192.168.7.1",
 	// System stats

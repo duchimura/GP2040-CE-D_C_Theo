@@ -17,8 +17,10 @@ import ReactiveLED from './Addons/ReactiveLED';
 import InputMacroAddon from './InputMacroAddon';
 import LayoutConfig from './LayoutConfig';
 import LedConfigPage from './LedConfigPage';
+import DC from './DC';
 
 export default {
+	DC,
 	LedConfigPage,
 	Common,
 	HomePage,

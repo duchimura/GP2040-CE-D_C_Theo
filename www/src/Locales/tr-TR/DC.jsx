@@ -1,0 +1,64 @@
+export default {
+	// Controller view
+	'controller-header': 'Kontrolcü',
+	'controller-description':
+		'Her düğme etiketini ve GPIO pinini gösterir. Kontrolcünüzdeki bir düğmeye basarak burada yanmasını sağlayın.',
+	'waiting-for-controller': 'Kontrolcü bekleniyor…',
+	// Layout selector
+	'layout-leverless': 'Leverless',
+	'layout-arcade': 'Arcade Stick',
+	'layout-mirrored': 'Aynalı',
+	// General settings
+	'general-settings-header': 'Genel Ayarlar',
+	'input-mode-label': 'Giriş modu',
+	'input-mode-help': 'Kontrolcünün USB üzerinden emüle ettiği konsol/protokol.',
+	save: 'Kaydet',
+	saved: 'Kaydedildi',
+	'save-failed': 'Kaydetme başarısız',
+	'load-failed': 'Yükleme başarısız',
+	loading: 'Yükleniyor…',
+	// Connection banner
+	'conn-searching': 'Kontrolcünüz aranıyor…',
+	'conn-connected': 'Kontrolcü bağlandı',
+	'conn-connected-named': 'Kontrolcü bağlandı: {{name}}',
+	'conn-connected-full-prefix': 'Bağlı Kontrolcü:',
+	'conn-connected-full-details-base': '{{label}} — GP2040-CE {{version}}',
+	'conn-connected-full-details-build': 'build {{build}}',
+	'conn-lost':
+		'Kontrolcüye ulaşılamıyor. USB ile bağlayın ve http://192.168.7.1 adresini açın',
+	// System stats
+	'system-stats-header': 'Sistem İstatistikleri',
+	version: 'Sürüm',
+	'version-value': '{{label}} ({{file}}.uf2)',
+	current: 'Mevcut: {{version}}',
+	latest: 'En Son: {{version}}',
+	architecture: 'Mimari: {{value}}',
+	'build-type': 'Build Türü: {{value}}',
+	'memory-header': 'Bellek (KB)',
+	'memory-flash': 'Flash: {{used}} / {{total}} (%{{pct}})',
+	'memory-heap': 'Heap: {{used}} / {{total}} (%{{pct}})',
+	'memory-static': 'Statik ayırmalar: {{value}}',
+	'memory-board': 'Kart flash: {{value}}',
+	none: '—',
+	// Interface toggle (Navigation)
+	'interface-badge': 'D_C_Theo Sürümü',
+	'switch-to-original': 'Orijinal arayüze geç',
+	'switch-to-dc': 'D_C_Theo arayüzüne geç',
+	// Remap mode
+	remap: 'Yeniden Ata',
+	'remap-exit': 'Bitti',
+	'remap-save': 'Kaydet',
+	'remap-saving': 'Kaydediliyor…',
+	'remap-revert': 'Geri Al',
+	'remap-pending': '{{count}} bekleyen değişiklik',
+	'remap-none-pending': 'Değişiklik yok',
+	'remap-error': 'Kaydetme başarısız — tekrar deneyin',
+	'remap-select-hint': 'Bir işlev seçin, ardından atamak için düğmelere tıklayın.',
+	// Profiles
+	profiles: 'Profiller',
+	'profile-rename': 'Profil adı',
+	'profile-add': 'Profil ekle',
+	'profile-enabled': 'Etkin',
+	'profile-copy-base': 'Temelden kopyala',
+	'profile-n': 'Profil {{n}}',
+};

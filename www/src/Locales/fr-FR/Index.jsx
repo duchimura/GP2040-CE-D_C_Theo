@@ -20,8 +20,10 @@ import InputMacroAddon from './InputMacroAddon';
 import LayoutConfig from './LayoutConfig';
 import Proto from './Proto/Index';
 import BootModeMapping from './BootModeMapping';
+import DC from './DC';
 
 export default {
+	DC,
 	Common,
 	HomePage,
 	Navigation,
