@@ -14,7 +14,7 @@ import {
   readSavedLayoutStyle,
   saveLayoutStyle,
 } from '../../Components/dc/layoutStylePreference';
-import type { LayoutStyle } from '../../Data/dc/layouts';
+import { LAYOUTS, type LayoutStyle } from '../../Data/dc/layouts';
 import {
   actionForButtonKey,
   buttonKeyForAction,
@@ -52,11 +52,12 @@ export default function ControllerViewPage() {
     saveLayoutStyle(s);
   };
 
-  // In remap mode we render the snapshot mapping (stable positions) and override
-  // labels/pending from the current (edited) profile — no reflow mid-edit.
+  // Each slot's pin is a fixed hardware fact (from LAYOUTS), not something derived
+  // from the profile — a pin can be reassigned to any function (including one
+  // another pin already has), so identity must never be keyed by function name.
   const pinByKey = useMemo(
-    () => new Map(view.snapshotMapping.map((m) => [m.buttonKey, m.pin])),
-    [view.snapshotMapping],
+    () => new Map(LAYOUTS[style].placements.map((p) => [p.key, p.defaultPin])),
+    [style],
   );
 
   const overrideLabel = (key: LayoutButtonKey): string | undefined => {
@@ -68,9 +69,9 @@ export default function ControllerViewPage() {
   };
 
   const pendingKeySet = new Set<LayoutButtonKey>(
-    view.snapshotMapping
-      .filter((m) => view.currentActions[m.pin] !== view.snapshotActions[m.pin])
-      .map((m) => m.buttonKey),
+    Array.from(pinByKey.entries())
+      .filter(([, pin]) => view.currentActions[pin] !== view.snapshotActions[pin])
+      .map(([key]) => key),
   );
 
   const onButtonClick = (key: LayoutButtonKey) => {

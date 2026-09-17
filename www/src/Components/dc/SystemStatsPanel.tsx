@@ -22,14 +22,14 @@ export default function SystemStatsPanel() {
   return (
     <div
       data-testid="system-stats"
-      className="tw-w-full lg:tw-w-64 tw-shrink-0 tw-rounded tw-border tw-border-slate-700 tw-bg-slate-800/40 tw-p-4 tw-text-sm tw-text-slate-200"
+      className="tw-w-full lg:tw-w-64 tw-shrink-0 tw-rounded tw-border tw-border-slate-300 dark:tw-border-slate-700 tw-bg-slate-100 dark:tw-bg-slate-800/40 tw-p-4 tw-text-sm tw-text-slate-700 dark:tw-text-slate-200"
     >
-      <h2 className="tw-mb-2 tw-font-semibold tw-text-slate-100">
+      <h2 className="tw-mb-2 tw-font-semibold tw-text-slate-900 dark:tw-text-slate-100">
         {t('system-stats-header')}
       </h2>
 
       <div className="tw-mb-3">
-        <div className="tw-font-semibold tw-text-slate-300">{t('version')}</div>
+        <div className="tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">{t('version')}</div>
         <div>
           {boardConfigProperties.label
             ? t('version-value', {
@@ -49,7 +49,7 @@ export default function SystemStatsPanel() {
       </div>
 
       <div>
-        <div className="tw-font-semibold tw-text-slate-300">
+        <div className="tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">
           {t('memory-header')}
         </div>
         <div>

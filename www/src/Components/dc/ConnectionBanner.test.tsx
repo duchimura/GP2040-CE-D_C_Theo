@@ -3,7 +3,9 @@ import { render, screen } from '@testing-library/react';
 import { useConnectionStore } from '../../Store/useConnectionStore';
 import ConnectionBanner from './ConnectionBanner';
 
-beforeEach(() => useConnectionStore.setState({ status: 'searching' }));
+beforeEach(() =>
+  useConnectionStore.setState({ status: 'searching', controllerName: '' }),
+);
 
 describe('ConnectionBanner', () => {
   it('shows searching message', () => {
@@ -30,5 +32,11 @@ describe('ConnectionBanner', () => {
     useConnectionStore.setState({ status: 'connected' });
     render(<ConnectionBanner />);
     expect(screen.getByText(/controller connected/i)).toBeInTheDocument();
+  });
+
+  it('shows the controller name when known', () => {
+    useConnectionStore.setState({ status: 'connected', controllerName: 'Pico' });
+    render(<ConnectionBanner />);
+    expect(screen.getByText(/controller connected: pico/i)).toBeInTheDocument();
   });
 });

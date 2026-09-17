@@ -27,10 +27,10 @@ export default function ProfilesBar({
   const isBase = selectedIndex === 0;
   return (
     <div className="tw-flex tw-flex-wrap tw-items-center tw-gap-2">
-      <span className="tw-text-sm tw-font-semibold tw-text-slate-300">
+      <span className="tw-text-sm tw-font-semibold tw-text-slate-600 dark:tw-text-slate-300">
         {t('profiles')}
       </span>
-      <div className="tw-inline-flex tw-overflow-hidden tw-rounded tw-border tw-border-slate-600">
+      <div className="tw-inline-flex tw-overflow-hidden tw-rounded tw-border tw-border-slate-300 dark:tw-border-slate-600">
         {profiles.map((p, i) => (
           <button
             key={i}
@@ -41,7 +41,7 @@ export default function ProfilesBar({
             className={`tw-px-3 tw-py-1 tw-text-sm ${
               i === selectedIndex
                 ? 'tw-bg-sky-600 tw-text-white'
-                : 'tw-bg-transparent tw-text-slate-300'
+                : 'tw-bg-transparent tw-text-slate-600 dark:tw-text-slate-300'
             }`}
           >
             {p.profileLabel || t('profile-n', { n: i + 1 })}
@@ -60,7 +60,7 @@ export default function ProfilesBar({
         data-testid="profile-add"
         disabled={profiles.length >= maxProfiles}
         onClick={onAdd}
-        className="tw-rounded tw-border tw-border-slate-500 tw-px-2 tw-py-1 tw-text-sm tw-text-slate-200 disabled:tw-opacity-40"
+        className="tw-rounded tw-border tw-border-slate-400 dark:tw-border-slate-500 tw-px-2 tw-py-1 tw-text-sm tw-text-slate-700 dark:tw-text-slate-200 disabled:tw-opacity-40"
       >
         {t('profile-add')}
       </button>
@@ -69,11 +69,11 @@ export default function ProfilesBar({
         data-testid="profile-copy-base"
         disabled={isBase}
         onClick={onCopyFromBase}
-        className="tw-rounded tw-border tw-border-slate-500 tw-px-2 tw-py-1 tw-text-sm tw-text-slate-200 disabled:tw-opacity-40"
+        className="tw-rounded tw-border tw-border-slate-400 dark:tw-border-slate-500 tw-px-2 tw-py-1 tw-text-sm tw-text-slate-700 dark:tw-text-slate-200 disabled:tw-opacity-40"
       >
         {t('profile-copy-base')}
       </button>
-      <label className="tw-flex tw-items-center tw-gap-1 tw-text-sm tw-text-slate-300">
+      <label className="tw-flex tw-items-center tw-gap-1 tw-text-sm tw-text-slate-600 dark:tw-text-slate-300">
         <input
           type="checkbox"
           data-testid="profile-enable"

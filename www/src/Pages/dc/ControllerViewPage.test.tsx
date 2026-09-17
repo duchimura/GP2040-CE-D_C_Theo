@@ -10,10 +10,12 @@ const view = {
   error: false,
   dirty: true,
   maxProfiles: 6,
-  currentMapping: [{ pin: 0, action: 5, buttonKey: 'B1' }],
-  snapshotMapping: [{ pin: 0, action: 5, buttonKey: 'B1' }],
-  currentActions: { 0: 5 },
-  snapshotActions: { 0: 5 },
+  // pin 6 is B1's real defaultPin (see Data/dc/layouts.ts) — rendering now
+  // resolves placements by their fixed pin, not by the mapping's buttonKey.
+  currentMapping: [{ pin: 6, action: 5, buttonKey: 'B1' }],
+  snapshotMapping: [{ pin: 6, action: 5, buttonKey: 'B1' }],
+  currentActions: { 6: 5 },
+  snapshotActions: { 6: 5 },
   assignFunctionToPin: vi.fn(),
   rename: vi.fn(),
   addProfile: vi.fn(),
@@ -68,7 +70,7 @@ describe('ControllerViewPage', () => {
     await userEvent.click(screen.getByTestId('remap-toggle'));
     await userEvent.click(screen.getByTestId('fn-B2'));
     await userEvent.click(screen.getByTestId('ctrl-btn-B1'));
-    expect(view.assignFunctionToPin).toHaveBeenCalledWith(0, 6); // B2 = action 6
+    expect(view.assignFunctionToPin).toHaveBeenCalledWith(6, 6); // pin 6 (B1), B2 = action 6
     await userEvent.click(screen.getByTestId('remap-save'));
     await waitFor(() => expect(view.save).toHaveBeenCalled());
   });

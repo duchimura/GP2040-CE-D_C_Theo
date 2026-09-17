@@ -42,7 +42,9 @@ export default function ControllerLayout({
   pendingKeys,
 }: Props) {
   const layout = LAYOUTS[layoutStyle];
-  const byKey = new Map(mapping.map((m) => [m.buttonKey, m]));
+  // Keyed by pin, not by function name: a placement is a fixed physical position
+  // tied to its defaultPin, and two pins can legitimately share a function.
+  const byPin = new Map(mapping.map((m) => [m.pin, m]));
 
   return (
     <svg
@@ -52,12 +54,13 @@ export default function ControllerLayout({
       aria-label="Controller layout"
     >
       {layout.placements.map((p) => {
-        const mapped = byKey.get(p.key);
+        const mapped = byPin.get(p.defaultPin);
         const held = mapped ? heldPins.includes(mapped.pin) : false;
         const c = colorsFor(Boolean(mapped), held);
         const clickable = Boolean(mapped) && Boolean(onButtonClick);
         const pending = pendingKeys?.has(p.key) ?? false;
-        const label = overrideLabel?.(p.key) ?? labelFor(p.key);
+        const label =
+          overrideLabel?.(p.key) ?? labelFor(mapped?.buttonKey ?? p.key);
         return (
           <g
             key={p.key}

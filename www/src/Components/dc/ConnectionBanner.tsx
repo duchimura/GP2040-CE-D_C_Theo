@@ -1,13 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import {
   useConnectionStore,
   type ConnectionStatus,
 } from '../../Store/useConnectionStore';
-
-const MESSAGES: Record<ConnectionStatus, string> = {
-  searching: 'Searching for your controller…',
-  connected: 'Controller connected',
-  lost: "Can't reach the controller. Plug it in via USB and open http://192.168.7.1",
-};
 
 const STATUS_CLASS: Record<ConnectionStatus, string> = {
   searching: 'tw-bg-slate-700 tw-text-slate-100',
@@ -16,7 +11,18 @@ const STATUS_CLASS: Record<ConnectionStatus, string> = {
 };
 
 export default function ConnectionBanner() {
+  const { t } = useTranslation('DC');
   const status = useConnectionStore((s) => s.status);
+  const controllerName = useConnectionStore((s) => s.controllerName);
+
+  const message = {
+    searching: t('conn-searching'),
+    connected: controllerName
+      ? t('conn-connected-named', { name: controllerName })
+      : t('conn-connected'),
+    lost: t('conn-lost'),
+  }[status];
+
   return (
     <div
       data-testid="connection-banner"
@@ -24,7 +30,7 @@ export default function ConnectionBanner() {
       role="status"
       className={`tw-w-full tw-mb-4 tw-px-4 tw-py-2 tw-text-sm ${STATUS_CLASS[status]}`}
     >
-      {MESSAGES[status]}
+      {message}
     </div>
   );
 }

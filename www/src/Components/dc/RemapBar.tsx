@@ -20,7 +20,10 @@ export default function RemapBar({
   const { t } = useTranslation('DC');
   return (
     <div className="tw-flex tw-items-center tw-gap-3">
-      <span data-testid="remap-pending" className="tw-text-sm tw-text-slate-300">
+      <span
+        data-testid="remap-pending"
+        className="tw-text-sm tw-text-slate-600 dark:tw-text-slate-300"
+      >
         {dirty
           ? t('remap-pending', { count: pendingCount })
           : t('remap-none-pending')}
@@ -39,7 +42,7 @@ export default function RemapBar({
         data-testid="remap-revert"
         disabled={!dirty || saving}
         onClick={onRevert}
-        className="tw-rounded tw-border tw-border-slate-500 tw-px-3 tw-py-1 tw-text-sm tw-text-slate-200 disabled:tw-opacity-40"
+        className="tw-rounded tw-border tw-border-slate-400 dark:tw-border-slate-500 tw-px-3 tw-py-1 tw-text-sm tw-text-slate-700 dark:tw-text-slate-200 disabled:tw-opacity-40"
       >
         {t('remap-revert')}
       </button>
