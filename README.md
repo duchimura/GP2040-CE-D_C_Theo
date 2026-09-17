@@ -24,6 +24,21 @@
   GP2040-CE is compatible with PC, PS3, PS4, PS5, Nintendo Switch, Xbox One, Steam Deck, MiSTer and Android.
 </p>
 
+## About This Fork
+
+This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) that adds a redesigned "D_C_Theo" web configurator interface alongside the stock UI. Highlights:
+
+- **Interactive controller view** — an SVG diagram of your controller's layout (leverless or arcade stick) that shows each button's label and GPIO pin, and lights up live as you press buttons.
+- **Visual button remapping** — pick a function, then click (or drag) it onto a button in the diagram to reassign it, with pending-change tracking and one-click save/revert.
+- **Profile management** — select, rename, add, enable, and copy profiles from a single toolbar, fully shared with the stock Pin Mapping page's profile data.
+- **Board-aware layouts** — pin wiring is resolved per board (from each board's own `BoardConfig.h`), so the diagram reflects the actual GPIO layout instead of assuming one board's pinout.
+- **Mirrored/"southpaw" layout toggle** for left-handed setups.
+- **Connection status banner** showing live reachability and the connected board's identity.
+- **Light and dark theme support** tuned for contrast in both modes.
+- Full translations of the new interface across all locales the stock UI already supports.
+
+The new interface is a toggle in the nav bar — switch back to the original GP2040-CE UI at any time. No firmware changes; it's a web-configurator-only fork built on the same profile/pin-mapping data model as upstream, so anything you configure is compatible with stock GP2040-CE.
+
 ## Links
 
 [Downloads](https://gp2040-ce.info/downloads) | [Installation](https://gp2040-ce.info/installation) | [Wiring](https://gp2040-ce.info/controller-build/wiring) | [Usage](https://gp2040-ce.info/usage) | [FAQ](https://gp2040-ce.info/faq/faq-general) | [GitHub](https://github.com/OpenStickCommunity/GP2040-CE)
