@@ -1,3 +1,5 @@
+import { GENERATED_BOARD_WIRINGS } from '@proto/boardWirings';
+
 export type LayoutStyle = 'leverless' | 'arcadeStick';
 // `key` is just the slot's nominal/fallback label — a fixed LayoutButtonKey for
 // the standard placements below, or a synthetic per-pin id (e.g. `extra-16`) for
@@ -113,24 +115,20 @@ const PICO_WIRING: BoardWiring = {
   B3: 10, B4: 11, R1: 12, L1: 13,
 };
 
-// configs/MiSTercadeV2/BoardConfig.h
-const MISTERCADE_V2_WIRING: BoardWiring = {
-  Up: 2, Down: 3, Right: 4, Left: 5,
-  B2: 6, R2: 7, L1: 8, L2: 9,
-  B3: 10, B4: 11, R1: 12, B1: 13,
-};
-
-// configs/OpenCore0/BoardConfig.h
-const OPENCORE0_WIRING: BoardWiring = {
-  Up: 12, Down: 10, Right: 11, Left: 9,
-  B1: 13, B2: 14, R2: 15, L2: 16,
-  B3: 17, B4: 18, R1: 19, L1: 20,
-};
+// Auto-generated from every configs/<Board>/BoardConfig.h by
+// scripts/genBoardWirings.js — see that file and
+// docs/superpowers/specs/2026-09-18-board-wiring-autogen-design.md. Do not
+// hand-add board entries here; re-run `npm run gen-board-wirings` (or
+// `npm start`/`npm run build`, which already do) after configs/ changes.
+//
+// Escape hatch for the rare case the generator's "first pin listed wins"
+// heuristic picks the wrong one for some future board — add a correction
+// here rather than special-casing the generator for one board.
+const MANUAL_WIRING_OVERRIDES: Record<string, BoardWiring> = {};
 
 const BOARD_WIRINGS: Record<string, BoardWiring> = {
-  pico: PICO_WIRING,
-  mistercadev2: MISTERCADE_V2_WIRING,
-  opencore0: OPENCORE0_WIRING,
+  ...GENERATED_BOARD_WIRINGS,
+  ...MANUAL_WIRING_OVERRIDES,
 };
 
 export function getLayout(
