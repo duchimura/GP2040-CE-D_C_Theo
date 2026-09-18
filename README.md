@@ -24,6 +24,23 @@
   GP2040-CE is compatible with PC, PS3, PS4, PS5, Nintendo Switch, Xbox One, Steam Deck, MiSTer and Android.
 </p>
 
+## About This Fork
+
+This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) that adds a redesigned "D_C_Theo" web configurator interface alongside the stock UI. It's a fight stick / arcade stick–focused build, named for D_C_Theo, a content creator in the fighting-game community. Highlights:
+
+- **Interactive controller view** — an SVG diagram of your controller's layout (leverless or arcade stick) that shows each button's label and GPIO pin, and lights up live as you press buttons.
+- **Visual button remapping** — pick a function, then click (or drag) it onto a button in the diagram to reassign it, with pending-change tracking and one-click save/revert.
+- **Profile management** — select, rename, add, enable, and copy profiles from a single toolbar, fully shared with the stock Pin Mapping page's profile data.
+- **Board-aware layouts** — pin wiring is resolved per board (from each board's own `BoardConfig.h`), so the diagram reflects the actual GPIO layout instead of assuming one board's pinout.
+- **Mirrored/"southpaw" layout toggle** for left-handed setups.
+- **Connection status banner** showing live reachability and the connected board's identity.
+- **Light and dark theme support** tuned for contrast in both modes.
+- Full translations of the new interface across all locales the stock UI already supports.
+
+The new interface is a toggle in the nav bar — switch back to the original GP2040-CE UI at any time.
+
+**Flashing**: the web UI is embedded in the firmware itself (served on-device at `http://192.168.7.1`), so you do need to flash this fork's `.uf2` build to your board once to get the D_C_Theo interface — same as installing any GP2040-CE build. What this fork *doesn't* change is GP2040-CE's underlying C++ firmware behavior: button remapping, profiles, and LEDs all go through the same firmware API endpoints stock GP2040-CE already provides, so configuration is fully compatible either way. After that initial flash, remapping buttons is done entirely from the browser — it's a live config change persisted to the device's settings, not something that requires reflashing.
+
 ## Links
 
 [Downloads](https://gp2040-ce.info/downloads) | [Installation](https://gp2040-ce.info/installation) | [Wiring](https://gp2040-ce.info/controller-build/wiring) | [Usage](https://gp2040-ce.info/usage) | [FAQ](https://gp2040-ce.info/faq/faq-general) | [GitHub](https://github.com/OpenStickCommunity/GP2040-CE)

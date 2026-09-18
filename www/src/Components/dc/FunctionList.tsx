@@ -6,6 +6,14 @@ type Props = {
   labelFor: (key: LayoutButtonKey) => string;
 };
 
+// Remap-list-only aliases clarifying which common button these map to —
+// distinct from labelFor, which drives the console-specific label shown
+// elsewhere (controller diagram, stock pages).
+const REMAP_LIST_ALIAS: Partial<Record<LayoutButtonKey, string>> = {
+  A1: 'A1/Start',
+  A2: 'A2/TPad',
+};
+
 export default function FunctionList({ selected, onSelect, labelFor }: Props) {
   return (
     <div className="tw-flex tw-w-24 tw-shrink-0 tw-flex-col tw-gap-1">
@@ -30,7 +38,7 @@ export default function FunctionList({ selected, onSelect, labelFor }: Props) {
               : 'tw-bg-slate-700 tw-text-slate-200'
           }`}
         >
-          {labelFor(key)}
+          {REMAP_LIST_ALIAS[key] ?? labelFor(key)}
         </button>
       ))}
     </div>
