@@ -82,6 +82,23 @@ export default function ControllerViewPage() {
   // was tuned against.
   const boardConfig = useConnectionStore((s) => s.controllerInfo?.boardConfig);
 
+  // Sticky version of boardConfig: useConnectionStore.checkConnection clears
+  // controllerInfo (hence boardConfig) on ANY failed poll, not just before
+  // the first successful connection — a dropped packet or the board being
+  // briefly busy mid-save, not only a cold start. The board's physical
+  // identity can't change mid-session, so once we've resolved it once, keep
+  // using that last-known value rather than blanking the whole page behind
+  // the loading placeholder on a transient disconnect; ConnectionBanner
+  // already surfaces "lost" separately.
+  const [resolvedBoardConfig, setResolvedBoardConfig] = useState<
+    string | undefined
+  >(boardConfig);
+  useEffect(() => {
+    if (boardConfig) {
+      setResolvedBoardConfig(boardConfig);
+    }
+  }, [boardConfig]);
+
   // The initial useState above only covers a direct/full-page load of
   // /pin-mapping — navigating here in-app re-renders this same component
   // instance rather than remounting it, so react to the route itself
@@ -104,8 +121,9 @@ export default function ControllerViewPage() {
   // detected from the profile's actual pin/action assignments, not hardcoded,
   // so any board's extra buttons show up automatically.
   const extraPlacements = useMemo(
-    () => computeExtraPlacements(style, view.currentActions, boardConfig, mirrored),
-    [style, view.currentActions, boardConfig, mirrored],
+    () =>
+      computeExtraPlacements(style, view.currentActions, resolvedBoardConfig, mirrored),
+    [style, view.currentActions, resolvedBoardConfig, mirrored],
   );
 
   // Each slot's pin is a fixed hardware fact (from getLayout/extraPlacements),
@@ -115,11 +133,12 @@ export default function ControllerViewPage() {
   const pinByKey = useMemo(
     () =>
       new Map(
-        [...getLayout(style, boardConfig, mirrored).placements, ...extraPlacements].map(
-          (p) => [p.key, p.defaultPin],
-        ),
+        [
+          ...getLayout(style, resolvedBoardConfig, mirrored).placements,
+          ...extraPlacements,
+        ].map((p) => [p.key, p.defaultPin]),
       ),
-    [style, boardConfig, mirrored, extraPlacements],
+    [style, resolvedBoardConfig, mirrored, extraPlacements],
   );
 
   const overrideLabel = (key: string): string | undefined => {
@@ -172,8 +191,12 @@ export default function ControllerViewPage() {
   // the board's identity (two independent polling paths — see
   // Store/useConnectionStore.ts). Rendering in that gap would silently fall
   // back to PICO_WIRING for boards that aren't a Pico, exactly the bug class
-  // this table's auto-generation (Data/dc/layouts.ts) fixes elsewhere.
-  if (connectionStatus !== 'connected') {
+  // this table's auto-generation (Data/dc/layouts.ts) fixes elsewhere. Gated
+  // on the STICKY resolvedBoardConfig, not live connectionStatus/boardConfig,
+  // so this only ever shows before the board's identity has ever been
+  // resolved (genuine cold start) — never again afterward, even across a
+  // later transient disconnect.
+  if (!resolvedBoardConfig) {
     return (
       <div data-testid="ctrl-loading-board" className="tw-p-4">
         {t('loading-button-map')}
@@ -248,7 +271,7 @@ export default function ControllerViewPage() {
                 overrideLabel={overrideLabel}
                 pendingKeys={pendingKeySet}
                 extraPlacements={extraPlacements}
-                boardConfig={boardConfig}
+                boardConfig={resolvedBoardConfig}
                 mirrored={mirrored}
               />
             </div>
@@ -267,7 +290,7 @@ export default function ControllerViewPage() {
                 heldPins={heldPins}
                 labelFor={labelFor}
                 extraPlacements={extraPlacements}
-                boardConfig={boardConfig}
+                boardConfig={resolvedBoardConfig}
                 mirrored={mirrored}
               />
             </div>

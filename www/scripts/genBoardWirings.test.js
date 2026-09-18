@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
@@ -112,5 +113,18 @@ describe('renderTsFile', () => {
     );
     expect(ts.indexOf('"pico"')).toBeLessThan(ts.indexOf('"zzz"'));
     expect(ts).toContain('"pico": { Up: 2, Down: 3, Left: 5, Right: 4 },');
+  });
+});
+
+describe('committed src_gen/boardWirings.ts drift guard', () => {
+  it('exactly matches what generating fresh against the current configs/ tree produces', () => {
+    // src_gen/boardWirings.ts is committed to git (like src_gen/enums.ts) so
+    // it's reviewable in diffs — but that only stays trustworthy if it's
+    // actually kept in sync. If a configs/*/BoardConfig.h changes without a
+    // re-run of `npm run gen-board-wirings`, this is what catches the drift.
+    const committedPath = path.resolve(__dirname, '../src_gen/boardWirings.ts');
+    const committed = fs.readFileSync(committedPath, 'utf8').replace(/\r\n/g, '\n');
+    const fresh = renderTsFile(generateBoardWirings(configsDir)).replace(/\r\n/g, '\n');
+    expect(committed).toEqual(fresh);
   });
 });

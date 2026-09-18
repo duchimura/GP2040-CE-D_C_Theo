@@ -141,6 +141,31 @@ describe('ControllerViewPage', () => {
     expect(screen.queryByTestId('ctrl-loading-board')).not.toBeInTheDocument();
   });
 
+  it('keeps showing the resolved layout (not the loading placeholder) across a transient disconnect after the board has already resolved once', () => {
+    // beforeEach already renders as connected with a known board (Pico), so
+    // this starts from an already-resolved identity.
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <ControllerViewPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('ctrl-btn-B1')).toBeInTheDocument();
+    expect(screen.queryByTestId('ctrl-loading-board')).not.toBeInTheDocument();
+
+    // A single failed poll (dropped packet, board busy mid-save) — the
+    // connection store clears controllerInfo, not just a cold-start
+    // scenario. The board's physical identity can't actually change
+    // mid-session, so the page should keep rendering it rather than
+    // blanking behind the loading placeholder (ConnectionBanner already
+    // surfaces the "lost" state separately).
+    act(() => {
+      useConnectionStore.setState({ status: 'lost', controllerInfo: null });
+    });
+
+    expect(screen.getByTestId('ctrl-btn-B1')).toBeInTheDocument();
+    expect(screen.queryByTestId('ctrl-loading-board')).not.toBeInTheDocument();
+  });
+
   it('loads profiles and renders the controller layout, hiding the profiles bar by default', () => {
     render(
       <MemoryRouter initialEntries={['/']}>

@@ -73,6 +73,18 @@ describe('getLayout', () => {
     });
   });
 
+  it('resolves missing cluster keys to defaultPin -1 for a board with a partial fixed-12 (ReflexCtrlNES only has 6 of the 12)', () => {
+    // configs/ReflexCtrlNES/BoardConfig.h only wires Up/Down/Left/Right/B1/B2 —
+    // no B3/B4/L1/L2/R1/R2. Before board-wiring auto-generation, every table
+    // entry had all 12 keys, so this fallback path never actually fired.
+    const placements = getLayout('leverless', 'ReflexCtrlNES').placements;
+    const byKey = Object.fromEntries(placements.map((p) => [p.key, p.defaultPin]));
+    expect(byKey).toMatchObject({
+      Up: 2, Down: 3, Right: 4, Left: 5, B1: 6, B2: 7,
+      B3: -1, B4: -1, L1: -1, L2: -1, R1: -1, R2: -1,
+    });
+  });
+
   it('the same board wiring applies across both layout styles (style only changes x/y)', () => {
     const leverless = getLayout('leverless', 'MiSTercadeV2');
     const arcade = getLayout('arcadeStick', 'MiSTercadeV2');
