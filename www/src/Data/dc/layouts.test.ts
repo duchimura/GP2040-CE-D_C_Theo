@@ -59,6 +59,20 @@ describe('getLayout', () => {
     });
   });
 
+  it('uses MavercadeRev2\'s own wiring instead of the Pico fallback', () => {
+    // configs/MavercadeRev2/BoardConfig.h — the D-pad and cluster are wired
+    // to different pins than Pico's default, so without this entry the
+    // visualizer looked at Pico's (unwired, on this board) D-pad pins and
+    // rendered the real D-pad as unrecognized "extra" buttons instead.
+    const placements = getLayout('leverless', 'MavercadeRev2').placements;
+    const byKey = Object.fromEntries(placements.map((p) => [p.key, p.defaultPin]));
+    expect(byKey).toEqual({
+      Up: 11, Down: 8, Right: 10, Left: 7,
+      B1: 12, B2: 17, R2: 18, L2: 9,
+      B3: 16, B4: 14, R1: 15, L1: 19,
+    });
+  });
+
   it('the same board wiring applies across both layout styles (style only changes x/y)', () => {
     const leverless = getLayout('leverless', 'MiSTercadeV2');
     const arcade = getLayout('arcadeStick', 'MiSTercadeV2');
