@@ -26,7 +26,7 @@
 
 ## About This Fork
 
-This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) that adds a redesigned "D_C_Theo" web configurator interface alongside the stock UI. Highlights:
+This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenStickCommunity/GP2040-CE) that adds a redesigned "D_C_Theo" web configurator interface alongside the stock UI. It's a fight stick / arcade stick–focused build, named for D_C_Theo, a content creator in the fighting-game community. Highlights:
 
 - **Interactive controller view** — an SVG diagram of your controller's layout (leverless or arcade stick) that shows each button's label and GPIO pin, and lights up live as you press buttons.
 - **Visual button remapping** — pick a function, then click (or drag) it onto a button in the diagram to reassign it, with pending-change tracking and one-click save/revert.
