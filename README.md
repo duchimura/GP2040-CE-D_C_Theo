@@ -31,10 +31,9 @@ This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenSti
 - **Interactive controller view** — an SVG diagram of your controller's layout (leverless or arcade stick) that shows each button's label and GPIO pin, and lights up live as you press buttons.
 - **Visual button remapping** — pick a function, then click (or drag) it onto a button in the diagram to reassign it, with pending-change tracking and one-click save/revert.
 - **Profile management** — select, rename, add, enable, and copy profiles from a single toolbar, fully shared with the stock Pin Mapping page's profile data.
-- **Board-aware layouts** — pin wiring is resolved per board (from each board's own `BoardConfig.h`), so the diagram reflects the actual GPIO layout instead of assuming one board's pinout.
+- **Board-aware layouts, generated automatically** — pin wiring is parsed at build time from every board's own `BoardConfig.h`, so the diagram reflects each board's actual GPIO layout instead of assuming one board's pinout. Covers the project's board configs out of the box (55 as of this writing), with no per-board hand-tuning required to add support for a new one.
 - **Mirrored/"southpaw" layout toggle** for left-handed setups.
-- **Connection status banner** showing live reachability and the connected board's identity.
-- **Light and dark theme support** tuned for contrast in both modes.
+- **Connection status banner** showing live reachability and the connected board's identity, and a controller view that keeps showing the resolved layout through a brief drop in connectivity instead of blanking to a loading screen.
 - Full translations of the new interface across all locales the stock UI already supports.
 
 The new interface is a toggle in the nav bar — switch back to the original GP2040-CE UI at any time.

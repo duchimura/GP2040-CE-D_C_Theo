@@ -5,7 +5,7 @@ export default {
 	'waiting-for-controller': '正在等待控制器…',
 	'loading-button-map': '正在加载按钮映射…',
 	// Layout selector
-	'layout-leverless': 'Leverless',
+	'layout-leverless': '无摇杆',
 	'layout-arcade': '街机摇杆',
 	'layout-mirrored': '镜像',
 	// General settings

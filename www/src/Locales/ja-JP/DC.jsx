@@ -6,7 +6,7 @@ export default {
 	'waiting-for-controller': 'コントローラーを待っています…',
 	'loading-button-map': 'ボタンマップを読み込み中…',
 	// Layout selector
-	'layout-leverless': 'Leverless',
+	'layout-leverless': 'レバーレス',
 	'layout-arcade': 'アーケードスティック',
 	'layout-mirrored': 'ミラー',
 	// General settings

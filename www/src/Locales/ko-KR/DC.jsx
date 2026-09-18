@@ -6,7 +6,7 @@ export default {
 	'waiting-for-controller': '컨트롤러를 기다리는 중…',
 	'loading-button-map': '버튼 맵을 불러오는 중…',
 	// Layout selector
-	'layout-leverless': 'Leverless',
+	'layout-leverless': '레버리스',
 	'layout-arcade': '아케이드 스틱',
 	'layout-mirrored': '미러',
 	// General settings
