@@ -19,6 +19,12 @@ describe('FunctionList', () => {
     expect(screen.getByTestId('fn-B1')).toHaveAttribute('aria-pressed', 'false');
   });
 
+  it('shows common-name aliases for A1/A2 regardless of labelFor', () => {
+    render(<FunctionList selected={null} onSelect={() => {}} labelFor={labelFor} />);
+    expect(screen.getByTestId('fn-A1')).toHaveTextContent('A1/Start');
+    expect(screen.getByTestId('fn-A2')).toHaveTextContent('A2/TPad');
+  });
+
   it('is draggable and puts its function key on the drag payload', () => {
     render(<FunctionList selected={null} onSelect={() => {}} labelFor={labelFor} />);
     const b1 = screen.getByTestId('fn-B1');
