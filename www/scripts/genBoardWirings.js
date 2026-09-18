@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 const KEY_MAP = {
   UP: 'Up', DOWN: 'Down', LEFT: 'Left', RIGHT: 'Right',
   B1: 'B1', B2: 'B2', B3: 'B3', B4: 'B4',
@@ -26,4 +29,21 @@ export function extractBoardWiring(contents) {
   }
   const hasAllDirections = ['Up', 'Down', 'Left', 'Right'].every((k) => k in found);
   return hasAllDirections ? found : null;
+}
+
+// Scans every configs/<Board>/BoardConfig.h and returns
+// { [lowercased board folder name]: wiring }, skipping any board
+// extractBoardWiring rejects (see that function's doc comment).
+export function generateBoardWirings(configsDir) {
+  const wirings = {};
+  for (const entry of fs.readdirSync(configsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const boardConfigPath = path.join(configsDir, entry.name, 'BoardConfig.h');
+    if (!fs.existsSync(boardConfigPath)) continue;
+    const wiring = extractBoardWiring(fs.readFileSync(boardConfigPath, 'utf8'));
+    if (wiring) {
+      wirings[entry.name.toLowerCase()] = wiring;
+    }
+  }
+  return wirings;
 }

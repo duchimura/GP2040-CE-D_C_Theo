@@ -1,5 +1,7 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
-import { extractBoardWiring } from './genBoardWirings.js';
+import { extractBoardWiring, generateBoardWirings } from './genBoardWirings.js';
 
 describe('extractBoardWiring', () => {
   it('extracts all 12 fixed-slot keys from conventional BoardConfig.h macros', () => {
@@ -54,5 +56,44 @@ describe('extractBoardWiring', () => {
       '#define GPIO_PIN_05 GpioAction::BUTTON_PRESS_LEFT',
     ].join('\n');
     expect(extractBoardWiring(contents)?.Up).toBe(2);
+  });
+});
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const configsDir = path.resolve(__dirname, '../../configs');
+
+describe('generateBoardWirings (against the real configs/ tree)', () => {
+  it("reproduces MavercadeRev2's hardware-verified wiring", () => {
+    const wirings = generateBoardWirings(configsDir);
+    expect(wirings.mavercaderev2).toEqual({
+      Up: 11, Down: 8, Right: 10, Left: 7,
+      B1: 12, B2: 17, R2: 18, L2: 9,
+      B3: 16, B4: 14, R1: 15, L1: 19,
+    });
+  });
+
+  it('excludes boards with no real fixed-12 D-pad', () => {
+    const wirings = generateBoardWirings(configsDir);
+    // Blank: template stub, no real hardware.
+    expect(wirings.blank).toBeUndefined();
+    // GranolaBeacon: accessory board; its one BUTTON_PRESS_UP macro is an
+    // unrelated HE-trigger alias, not a D-pad.
+    expect(wirings.granolabeacon).toBeUndefined();
+  });
+
+  it('covers the boards already known to need non-Pico wiring', () => {
+    const wirings = generateBoardWirings(configsDir);
+    for (const board of ['pico', 'mistercadev2', 'opencore0', 'mavercaderev2']) {
+      expect(wirings[board]).toBeDefined();
+    }
+  });
+
+  it("picks Granola's primary cluster pins, not its labeled accessibility-input duplicates", () => {
+    // configs/Granola/BoardConfig.h defines L1/R1 twice: GPIO_PIN_12/13 under
+    // "Main pin mapping Configuration", and GPIO_PIN_00/01 again under a
+    // later "Additional accessibility inputs" comment block. The first
+    // (primary) pins must win.
+    const wirings = generateBoardWirings(configsDir);
+    expect(wirings.granola).toMatchObject({ R1: 12, L1: 13 });
   });
 });
