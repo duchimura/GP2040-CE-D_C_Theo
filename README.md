@@ -37,7 +37,9 @@ This is **GP2040-CE-D_C_Theo**, a fork of [GP2040-CE](https://github.com/OpenSti
 - **Light and dark theme support** tuned for contrast in both modes.
 - Full translations of the new interface across all locales the stock UI already supports.
 
-The new interface is a toggle in the nav bar — switch back to the original GP2040-CE UI at any time. No firmware changes; it's a web-configurator-only fork built on the same profile/pin-mapping data model as upstream, so anything you configure is compatible with stock GP2040-CE.
+The new interface is a toggle in the nav bar — switch back to the original GP2040-CE UI at any time.
+
+**Flashing**: the web UI is embedded in the firmware itself (served on-device at `http://192.168.7.1`), so you do need to flash this fork's `.uf2` build to your board once to get the D_C_Theo interface — same as installing any GP2040-CE build. What this fork *doesn't* change is GP2040-CE's underlying C++ firmware behavior: button remapping, profiles, and LEDs all go through the same firmware API endpoints stock GP2040-CE already provides, so configuration is fully compatible either way. After that initial flash, remapping buttons is done entirely from the browser — it's a live config change persisted to the device's settings, not something that requires reflashing.
 
 ## Links
 
