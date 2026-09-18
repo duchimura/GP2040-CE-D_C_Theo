@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'Chaque bouton affiche son libellé et sa broche GPIO. Appuyez sur un bouton de votre manette pour l’allumer ici.',
 	'waiting-for-controller': 'En attente de la manette…',
+	'loading-button-map': 'Chargement de la disposition des boutons…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',

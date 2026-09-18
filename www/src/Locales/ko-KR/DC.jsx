@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'각 버튼에는 라벨과 GPIO 핀이 표시됩니다. 컨트롤러의 버튼을 누르면 여기에서 불이 켜집니다.',
 	'waiting-for-controller': '컨트롤러를 기다리는 중…',
+	'loading-button-map': '버튼 맵을 불러오는 중…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': '아케이드 스틱',

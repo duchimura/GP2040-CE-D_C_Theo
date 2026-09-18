@@ -3,6 +3,7 @@ export default {
 	'controller-header': '控制器',
 	'controller-description': '每个按钮都会显示其标签和 GPIO 引脚。按下控制器上的按钮即可在此处点亮。',
 	'waiting-for-controller': '正在等待控制器…',
+	'loading-button-map': '正在加载按钮映射…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': '街机摇杆',

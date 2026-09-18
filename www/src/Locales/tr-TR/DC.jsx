@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'Her düğme etiketini ve GPIO pinini gösterir. Kontrolcünüzdeki bir düğmeye basarak burada yanmasını sağlayın.',
 	'waiting-for-controller': 'Kontrolcü bekleniyor…',
+	'loading-button-map': 'Düğme haritası yükleniyor…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',

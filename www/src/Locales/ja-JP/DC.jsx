@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'各ボタンにはラベルと GPIO ピンが表示されます。コントローラーのボタンを押すとここが点灯します。',
 	'waiting-for-controller': 'コントローラーを待っています…',
+	'loading-button-map': 'ボタンマップを読み込み中…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'アーケードスティック',

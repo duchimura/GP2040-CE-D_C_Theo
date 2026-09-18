@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'Cada botão mostra seu rótulo e pino GPIO. Pressione um botão no seu controle para acendê-lo aqui.',
 	'waiting-for-controller': 'Aguardando o controle…',
+	'loading-button-map': 'Carregando o mapa de botões…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',

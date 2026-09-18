@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'Jede Taste zeigt ihre Bezeichnung und ihren GPIO-Pin. Drücken Sie eine Taste auf Ihrem Controller, um sie hier aufleuchten zu lassen.',
 	'waiting-for-controller': 'Warte auf Controller…',
+	'loading-button-map': 'Lade Tastenzuordnung…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
