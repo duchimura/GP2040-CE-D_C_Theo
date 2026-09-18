@@ -4,6 +4,7 @@ export default {
 	'controller-description':
 		'Each button shows its label and GPIO pin. Press a button on your controller to light it up here.',
 	'waiting-for-controller': 'Waiting for controller…',
+	'loading-button-map': 'Loading button map…',
 	// Layout selector
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',

@@ -58,7 +58,26 @@ vi.mock('../../Store/useSystemStats', () => ({
 
 import ControllerViewPage from './ControllerViewPage';
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  // Most tests in this file implicitly assume an already-connected board
+  // with a known identity (that's what let them render the full layout
+  // before this state existed at all). Pico matches the B1=pin 6 assumption
+  // already baked into the `view` fixture above (see Data/dc/layouts.ts).
+  useConnectionStore.setState({
+    status: 'connected',
+    controllerName: 'Test Board',
+    controllerInfo: {
+      version: '',
+      boardArchitecture: '',
+      boardBuild: '',
+      boardBuildType: '',
+      boardConfigLabel: 'Pico',
+      boardConfigFileName: '',
+      boardConfig: 'Pico',
+    },
+  });
+});
 
 describe('ControllerViewPage', () => {
   it('retries loading automatically once the connection comes back, with no retry button', async () => {
@@ -88,6 +107,38 @@ describe('ControllerViewPage', () => {
       view.profiles = [{ profileLabel: 'P1', enabled: true }];
       useConnectionStore.setState({ status: 'searching' });
     }
+  });
+
+  it("shows a loading placeholder while the board's identity is still resolving, instead of silently using the Pico-default layout", () => {
+    useConnectionStore.setState({
+      status: 'searching',
+      controllerName: '',
+      controllerInfo: null,
+    });
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <ControllerViewPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('ctrl-loading-board')).toBeInTheDocument();
+    expect(screen.queryByTestId('ctrl-btn-B1')).not.toBeInTheDocument();
+
+    act(() => {
+      useConnectionStore.setState({
+        status: 'connected',
+        controllerInfo: {
+          version: '',
+          boardArchitecture: '',
+          boardBuild: '',
+          boardBuildType: '',
+          boardConfigLabel: 'Pico',
+          boardConfigFileName: '',
+          boardConfig: 'Pico',
+        },
+      });
+    });
+    expect(screen.getByTestId('ctrl-btn-B1')).toBeInTheDocument();
+    expect(screen.queryByTestId('ctrl-loading-board')).not.toBeInTheDocument();
   });
 
   it('loads profiles and renders the controller layout, hiding the profiles bar by default', () => {

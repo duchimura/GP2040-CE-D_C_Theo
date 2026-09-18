@@ -168,6 +168,19 @@ export default function ControllerViewPage() {
     );
   }
 
+  // Profile data can load slightly ahead of the connection store resolving
+  // the board's identity (two independent polling paths — see
+  // Store/useConnectionStore.ts). Rendering in that gap would silently fall
+  // back to PICO_WIRING for boards that aren't a Pico, exactly the bug class
+  // this table's auto-generation (Data/dc/layouts.ts) fixes elsewhere.
+  if (connectionStatus !== 'connected') {
+    return (
+      <div data-testid="ctrl-loading-board" className="tw-p-4">
+        {t('loading-button-map')}
+      </div>
+    );
+  }
+
   return (
     <div className="tw-p-4 tw-space-y-4">
       <div className="tw-flex tw-items-center tw-justify-between">
