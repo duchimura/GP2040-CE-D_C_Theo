@@ -97,3 +97,20 @@ describe('generateBoardWirings (against the real configs/ tree)', () => {
     expect(wirings.granola).toMatchObject({ R1: 12, L1: 13 });
   });
 });
+
+import { renderTsFile } from './genBoardWirings.js';
+
+describe('renderTsFile', () => {
+  it('renders a sorted, typed TS map keyed by lowercased board name', () => {
+    const ts = renderTsFile({
+      zzz: { Up: 1, Down: 2, Left: 3, Right: 4 },
+      pico: { Up: 2, Down: 3, Left: 5, Right: 4 },
+    });
+    expect(ts).toContain('GENERATED FILE');
+    expect(ts).toContain(
+      'export const GENERATED_BOARD_WIRINGS: Record<string, Record<string, number>> = {',
+    );
+    expect(ts.indexOf('"pico"')).toBeLessThan(ts.indexOf('"zzz"'));
+    expect(ts).toContain('"pico": { Up: 2, Down: 3, Left: 5, Right: 4 },');
+  });
+});

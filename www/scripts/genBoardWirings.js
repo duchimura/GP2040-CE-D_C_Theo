@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KEY_MAP = {
   UP: 'Up', DOWN: 'Down', LEFT: 'Left', RIGHT: 'Right',
@@ -46,4 +47,50 @@ export function generateBoardWirings(configsDir) {
     }
   }
   return wirings;
+}
+
+const KEY_ORDER = [
+  'Up', 'Down', 'Left', 'Right',
+  'B1', 'B2', 'B3', 'B4', 'L1', 'L2', 'R1', 'R2',
+];
+
+// Renders the wirings map as a TypeScript source file.
+export function renderTsFile(wirings) {
+  const boardEntries = Object.keys(wirings)
+    .sort()
+    .map((board) => {
+      const wiring = wirings[board];
+      const fields = KEY_ORDER.filter((k) => k in wiring)
+        .map((k) => `${k}: ${wiring[k]}`)
+        .join(', ');
+      return `  ${JSON.stringify(board)}: { ${fields} },`;
+    })
+    .join('\n');
+
+  return `// GENERATED FILE — do not hand-edit.
+// Produced by \`npm run gen-board-wirings\` (www/scripts/genBoardWirings.js)
+// from ../configs/*/BoardConfig.h. Re-run that script — or \`npm start\`/
+// \`npm run build\`, which already do — after configs/ changes.
+
+export const GENERATED_BOARD_WIRINGS: Record<string, Record<string, number>> = {
+${boardEntries}
+};
+`;
+}
+
+function main() {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const configsDir = path.resolve(__dirname, '../../configs');
+  const outPath = path.resolve(__dirname, '../src_gen/boardWirings.ts');
+
+  const wirings = generateBoardWirings(configsDir);
+  fs.writeFileSync(outPath, renderTsFile(wirings));
+  console.log(
+    `gen-board-wirings: wrote ${Object.keys(wirings).length} board wirings to ${outPath}`,
+  );
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
 }
