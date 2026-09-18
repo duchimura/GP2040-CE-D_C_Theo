@@ -27,3 +27,6 @@ www/src_gen/enums.ts
 
 # Generated UI build artifacts
 www/build/
+
+# Agent-managed git worktrees (scratch, per-task isolation)
+.worktrees/
