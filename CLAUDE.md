@@ -59,6 +59,21 @@ plug in). Upstream: `OpenStickCommunity/GP2040-CE` (configured as the `upstream`
 
 ## Git / workflow
 
+> **⚠️ Before any pull/push in this repo, read this first.** On 2026-09-19, `main`'s history
+> was rewritten (`git filter-repo`) to scrub personal-identity commit metadata
+> (`duchimura`/`CryptonairzOG` → `D_C_Theo Edition <noreply@users.noreply.github.com>`) and
+> force-pushed to `origin`. A stale local clone from *before* that rewrite got merged back in
+> once already, reintroducing the scrubbed identities and nearly doubling the commit count —
+> caught and fixed a second time. **If your local `main` predates this note, do not `git pull`
+> or merge — it will reintroduce the problem.** Instead sync first:
+> ```
+> git fetch origin
+> git reset --hard origin/main
+> ```
+> Only do this if you have no uncommitted local work you need (check `git status` first,
+> `git stash` anything real). After syncing, this warning no longer applies to your clone —
+> normal pull/push is fine again, and you can delete this note.
+
 - This is a standalone repo (separate from any other project). Normal `commit` / `push` to
   `origin` (the fork) is expected. `main` is the integration branch; feature branches merge
   (fast-forward) into it and are deleted.
