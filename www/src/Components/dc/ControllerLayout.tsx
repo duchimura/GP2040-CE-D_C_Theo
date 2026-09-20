@@ -9,8 +9,8 @@ import FaceGlyph from './FaceGlyph';
 const LABEL_MARGIN = 8;
 // The glyph is a fraction of the circle's radius, sitting where the label text
 // would (just above center, leaving the "Pin N" line below it).
-const GLYPH_SIZE_RATIO = 0.28;
-const GLYPH_OFFSET_Y = 8;
+const GLYPH_SIZE_RATIO = 0.26;
+const GLYPH_OFFSET_Y = 11;
 
 type Props = {
   layoutStyle: LayoutStyle;
