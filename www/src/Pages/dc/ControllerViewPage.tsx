@@ -7,6 +7,7 @@ import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useProfilesView } from '../../Hooks/dc/useProfilesView';
 import { useConnectionStore } from '../../Store/useConnectionStore';
 import { labelSetForInputMode } from '../../Data/dc/inputModes';
+import { shortLabel } from '../../Data/dc/shortLabels';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import FunctionList from '../../Components/dc/FunctionList';
@@ -68,6 +69,8 @@ export default function ControllerViewPage() {
     (BUTTONS as Record<string, Record<string, string>>)[labelSetKey] ??
     (BUTTONS as Record<string, Record<string, string>>).gp2040;
   const labelFor = (key: string): string => labelSet[key] ?? key;
+  // Text drawn inside the button circles is shortened where it wouldn't fit.
+  const circleLabelFor = (key: string): string => shortLabel(labelFor(key));
 
   useEffect(() => {
     view.load();
@@ -157,7 +160,7 @@ export default function ControllerViewPage() {
     const workingKey = buttonKeyForAction(view.currentActions[pin]);
     // No override for an unresolved working function — ControllerLayout's own
     // fallback then applies (no made-up label, just the pin number for extras).
-    return workingKey ? labelFor(workingKey) : undefined;
+    return workingKey ? circleLabelFor(workingKey) : undefined;
   };
 
   const pendingKeySet = new Set<string>(
@@ -275,7 +278,7 @@ export default function ControllerViewPage() {
                 layoutStyle={style}
                 mapping={view.snapshotMapping}
                 heldPins={heldPins}
-                labelFor={labelFor}
+                labelFor={circleLabelFor}
                 onButtonClick={onButtonClick}
                 onFunctionDrop={onFunctionDrop}
                 overrideLabel={overrideLabel}
@@ -298,7 +301,7 @@ export default function ControllerViewPage() {
                 layoutStyle={style}
                 mapping={view.currentMapping}
                 heldPins={heldPins}
-                labelFor={labelFor}
+                labelFor={circleLabelFor}
                 extraPlacements={extraPlacements}
                 boardConfig={resolvedBoardConfig}
                 mirrored={mirrored}

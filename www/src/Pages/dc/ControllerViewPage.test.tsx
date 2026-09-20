@@ -5,6 +5,7 @@ import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useConnectionStore } from '../../Store/useConnectionStore';
 import { AppContext } from '../../Contexts/AppContext';
+import { BUTTON_ACTIONS } from '../../Data/Pins';
 
 const view = {
   profiles: [{ profileLabel: 'P1', enabled: true }],
@@ -340,5 +341,34 @@ describe('ControllerViewPage', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('combobox', { name: /input mode/i })).toHaveValue('4');
+  });
+
+  it("shows PS4's touchpad button as 'TPad' so it fits its circle", () => {
+    const a2 = BUTTON_ACTIONS.BUTTON_PRESS_A2;
+    const saved = {
+      currentMapping: view.currentMapping,
+      snapshotMapping: view.snapshotMapping,
+      currentActions: view.currentActions,
+      snapshotActions: view.snapshotActions,
+    };
+    Object.assign(view, {
+      currentMapping: [...saved.currentMapping, { pin: 21, action: a2, buttonKey: 'A2' }],
+      snapshotMapping: [...saved.snapshotMapping, { pin: 21, action: a2, buttonKey: 'A2' }],
+      currentActions: { ...saved.currentActions, 21: a2 },
+      snapshotActions: { ...saved.snapshotActions, 21: a2 },
+    });
+    try {
+      useConnectionStore.setState({ inputMode: 4 }); // PS4: A2 = 'Touchpad Center'
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <ControllerViewPage />
+        </MemoryRouter>,
+      );
+      const extra = screen.getByTestId('ctrl-btn-extra-21');
+      expect(extra).toHaveTextContent('TPad');
+      expect(extra).not.toHaveTextContent('Touchpad');
+    } finally {
+      Object.assign(view, saved);
+    }
   });
 });
