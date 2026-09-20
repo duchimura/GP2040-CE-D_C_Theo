@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
 	'layout-mirrored': 'Gespiegelt',
-	// General settings
-	'general-settings-header': 'Allgemeine Einstellungen',
+	// Input mode selector
 	'input-mode-label': 'Eingabemodus',
-	'input-mode-help': 'Die Konsole/das Protokoll, das der Controller über USB emuliert.',
-	save: 'Speichern',
-	saved: 'Gespeichert',
-	'save-failed': 'Speichern fehlgeschlagen',
-	'load-failed': 'Laden fehlgeschlagen',
-	loading: 'Laden…',
+	'input-mode-saving': 'Wird gespeichert…',
+	'input-mode-saved': 'Gespeichert – zum Übernehmen neu starten',
+	'input-mode-save-failed': 'Speichern fehlgeschlagen – erneut versuchen',
 	// Connection banner
 	'conn-searching': 'Suche nach Ihrem Controller…',
 	'conn-connected': 'Controller verbunden',

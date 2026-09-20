@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useConnectionStore } from '../../Store/useConnectionStore';
+import { AppContext } from '../../Contexts/AppContext';
 
 const view = {
   profiles: [{ profileLabel: 'P1', enabled: true }],
@@ -287,5 +288,57 @@ describe('ControllerViewPage', () => {
     const dataTransfer = { getData: vi.fn(() => 'B2'), setData: vi.fn(), dropEffect: '' };
     fireEvent.drop(screen.getByTestId('ctrl-btn-B1'), { dataTransfer });
     expect(view.assignFunctionToPin).toHaveBeenCalledWith(6, 6); // pin 6 (B1), B2 = action 6
+  });
+
+  describe('button labels follow the device input mode', () => {
+    const renderPage = (navLabelType?: string) =>
+      render(
+        <AppContext.Provider
+          value={
+            (navLabelType
+              ? { buttonLabels: { buttonLabelType: navLabelType } }
+              : null) as never
+          }
+        >
+          <MemoryRouter initialEntries={['/']}>
+            <ControllerViewPage />
+          </MemoryRouter>
+        </AppContext.Provider>,
+      );
+
+    it('uses the label set matching the device input mode', () => {
+      useConnectionStore.setState({ inputMode: 4 }); // PS4
+      renderPage();
+      expect(screen.getByTestId('ctrl-btn-B1')).toHaveTextContent('Cross');
+    });
+
+    it('lets the device input mode win over the nav label dropdown', () => {
+      useConnectionStore.setState({ inputMode: 4 }); // PS4
+      renderPage('switch');
+      expect(screen.getByTestId('ctrl-btn-B1')).toHaveTextContent('Cross');
+    });
+
+    it('falls back to the nav label dropdown when the mode has no label set', () => {
+      useConnectionStore.setState({ inputMode: 3 }); // Keyboard
+      renderPage('ps4');
+      expect(screen.getByTestId('ctrl-btn-B1')).toHaveTextContent('Cross');
+    });
+
+    it('falls back to the nav label dropdown when the input mode is unknown', () => {
+      useConnectionStore.setState({ inputMode: null });
+      renderPage('switch');
+      expect(screen.getByTestId('ctrl-btn-B1')).toHaveTextContent('B');
+      expect(screen.getByTestId('ctrl-btn-B1')).not.toHaveTextContent('B1');
+    });
+  });
+
+  it('offers the console (input mode) dropdown in the toolbar', () => {
+    useConnectionStore.setState({ inputMode: 4 });
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <ControllerViewPage />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole('combobox', { name: /input mode/i })).toHaveValue('4');
   });
 });

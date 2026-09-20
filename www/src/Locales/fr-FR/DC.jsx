@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
 	'layout-mirrored': 'Miroir',
-	// General settings
-	'general-settings-header': 'Paramètres Généraux',
+	// Input mode selector
 	'input-mode-label': "Mode d'entrée",
-	'input-mode-help': 'La console/le protocole que la manette émule via USB.',
-	save: 'Enregistrer',
-	saved: 'Enregistré',
-	'save-failed': "Échec de l'enregistrement",
-	'load-failed': 'Échec du chargement',
-	loading: 'Chargement…',
+	'input-mode-saving': 'Enregistrement…',
+	'input-mode-saved': 'Enregistré – redémarrez pour appliquer',
+	'input-mode-save-failed': 'Échec de l’enregistrement – réessayez',
 	// Connection banner
 	'conn-searching': 'Recherche de votre manette…',
 	'conn-connected': 'Manette connectée',

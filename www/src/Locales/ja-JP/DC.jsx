@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': 'レバーレス',
 	'layout-arcade': 'アーケードスティック',
 	'layout-mirrored': 'ミラー',
-	// General settings
-	'general-settings-header': '一般設定',
+	// Input mode selector
 	'input-mode-label': '入力モード',
-	'input-mode-help': 'コントローラーが USB 経由でエミュレートするコンソール/プロトコル。',
-	save: '保存',
-	saved: '保存しました',
-	'save-failed': '保存に失敗しました',
-	'load-failed': '読み込みに失敗しました',
-	loading: '読込中…',
+	'input-mode-saving': '保存中…',
+	'input-mode-saved': '保存しました。再起動すると反映されます',
+	'input-mode-save-failed': '保存に失敗しました。もう一度お試しください',
 	// Connection banner
 	'conn-searching': 'コントローラーを検索しています…',
 	'conn-connected': 'コントローラー接続済み',

@@ -430,8 +430,9 @@ app.get('/api/getAnimationProtoOptions', (req, res) => {
 	});
 });
 
-app.get('/api/getGamepadOptions', (req, res) => {
-	return res.send({
+// In-memory so the D_C_Theo General Settings page (input mode etc.) round-trips
+// in dev; resets when the mock restarts.
+const gamepadOptions = {
 		dpadMode: 0,
 		inputMode: 4,
 		inputDeviceType: 0,
@@ -543,7 +544,24 @@ app.get('/api/getGamepadOptions', (req, res) => {
 			buttonsMask: 0,
 			action: 0,
 		},
-	});
+	};
+
+app.get('/api/getGamepadOptions', (req, res) => {
+	return res.send(gamepadOptions);
+});
+
+app.post('/api/setGamepadOptions', (req, res) => {
+	Object.assign(gamepadOptions, req.body);
+	// The firmware takes the USB IDs as numbers but reports them as hex strings.
+	for (const key of ['usbVendorID', 'usbProductID']) {
+		if (typeof gamepadOptions[key] === 'number') {
+			gamepadOptions[key] = gamepadOptions[key]
+				.toString(16)
+				.toUpperCase()
+				.padStart(4, '0');
+		}
+	}
+	return res.send(gamepadOptions);
 });
 
 app.get('/api/getLedOptions', (req, res) => {

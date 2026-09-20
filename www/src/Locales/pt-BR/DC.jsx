@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
 	'layout-mirrored': 'Espelhado',
-	// General settings
-	'general-settings-header': 'Configurações Gerais',
+	// Input mode selector
 	'input-mode-label': 'Modo de entrada',
-	'input-mode-help': 'O console/protocolo que o controle emula via USB.',
-	save: 'Salvar',
-	saved: 'Salvo',
-	'save-failed': 'Falha ao salvar',
-	'load-failed': 'Falha ao carregar',
-	loading: 'Carregando…',
+	'input-mode-saving': 'Salvando…',
+	'input-mode-saved': 'Salvo — reinicie para aplicar',
+	'input-mode-save-failed': 'Falha ao salvar — tente novamente',
 	// Connection banner
 	'conn-searching': 'Procurando seu controle…',
 	'conn-connected': 'Controle conectado',

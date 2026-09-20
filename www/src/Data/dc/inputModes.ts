@@ -29,3 +29,24 @@ const VALID_VALUES = new Set(INPUT_MODES.map((m) => m.value));
 
 export const isValidInputMode = (n: number): boolean =>
   Number.isInteger(n) && VALID_VALUES.has(n);
+
+// The stock web UI's button-label sets (Data/Buttons.js keys) that correspond to
+// a console. Modes with no matching set (Keyboard, the Mini consoles, ...) are
+// omitted so the user's current label choice is left alone.
+const LABEL_SET_BY_INPUT_MODE: Record<number, string> = {
+  0: 'xinput',
+  1: 'switch',
+  2: 'ps3',
+  4: 'ps4',
+  5: 'xinput',
+  11: 'ps3',
+  12: 'xinput',
+  13: 'ps4',
+  14: 'dinput',
+  15: 'switch',
+  16: 'ps4',
+  17: 'sinput',
+};
+
+export const labelSetForInputMode = (mode: number): string | undefined =>
+  LABEL_SET_BY_INPUT_MODE[mode];

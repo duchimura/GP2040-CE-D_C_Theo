@@ -6,6 +6,7 @@ beforeEach(() => {
     status: 'searching',
     controllerName: '',
     controllerInfo: null,
+    inputMode: null,
   });
 });
 
@@ -134,5 +135,40 @@ describe('useConnectionStore.checkConnection', () => {
       .getState()
       .checkConnection(fakeFetch as unknown as typeof fetch);
     expect(result).toBe('lost');
+  });
+
+  it('captures the current input mode from getGamepadOptions', async () => {
+    const fakeFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ inputMode: 1 }),
+    });
+    await useConnectionStore
+      .getState()
+      .checkConnection(fakeFetch as unknown as typeof fetch);
+    expect(useConnectionStore.getState().inputMode).toBe(1);
+  });
+
+  it('updates inputMode on later polls while staying connected', async () => {
+    let mode = 4;
+    const fakeFetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({ ok: true, json: async () => ({ inputMode: mode }) }),
+    );
+    await useConnectionStore.getState().checkConnection(fakeFetch as unknown as typeof fetch);
+    mode = 15;
+    await useConnectionStore.getState().checkConnection(fakeFetch as unknown as typeof fetch);
+    expect(useConnectionStore.getState().inputMode).toBe(15);
+  });
+
+  it('leaves inputMode null when the response has none', async () => {
+    const fakeFetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
+    await useConnectionStore.getState().checkConnection(fakeFetch as unknown as typeof fetch);
+    expect(useConnectionStore.getState().inputMode).toBeNull();
+  });
+
+  it('clears inputMode when the connection is lost', async () => {
+    useConnectionStore.setState({ inputMode: 4 });
+    const fakeFetch = vi.fn().mockResolvedValue({ ok: false });
+    await useConnectionStore.getState().checkConnection(fakeFetch as unknown as typeof fetch);
+    expect(useConnectionStore.getState().inputMode).toBeNull();
   });
 });

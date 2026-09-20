@@ -8,15 +8,11 @@ export default {
 	'layout-leverless': '无摇杆',
 	'layout-arcade': '街机摇杆',
 	'layout-mirrored': '镜像',
-	// General settings
-	'general-settings-header': '常规设置',
+	// Input mode selector
 	'input-mode-label': '输入模式',
-	'input-mode-help': '控制器通过 USB 模拟的主机/协议。',
-	save: '保存',
-	saved: '已保存',
-	'save-failed': '保存失败',
-	'load-failed': '加载失败',
-	loading: '加载中…',
+	'input-mode-saving': '正在保存…',
+	'input-mode-saved': '已保存——重启后生效',
+	'input-mode-save-failed': '保存失败——请重试',
 	// Connection banner
 	'conn-searching': '正在搜索您的控制器…',
 	'conn-connected': '控制器已连接',

@@ -6,6 +6,7 @@ import { BUTTONS } from '../../Data/Buttons';
 import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useProfilesView } from '../../Hooks/dc/useProfilesView';
 import { useConnectionStore } from '../../Store/useConnectionStore';
+import { labelSetForInputMode } from '../../Data/dc/inputModes';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import FunctionList from '../../Components/dc/FunctionList';
@@ -13,6 +14,7 @@ import RemapBar from '../../Components/dc/RemapBar';
 import ProfilesBar from '../../Components/dc/ProfilesBar';
 import LayoutStyleSelector from '../../Components/dc/LayoutStyleSelector';
 import MirroredToggle from '../../Components/dc/MirroredToggle';
+import InputModeSelector from '../../Components/dc/InputModeSelector';
 import {
   readSavedLayoutStyle,
   saveLayoutStyle,
@@ -54,7 +56,14 @@ export default function ControllerViewPage() {
   const appContext = useContext(AppContext) as {
     buttonLabels?: { buttonLabelType?: string };
   };
-  const labelSetKey = appContext?.buttonLabels?.buttonLabelType ?? 'gp2040';
+  // The device's own input mode decides the labels (so the visualizer mirrors
+  // whatever console it's emulating, no matter which page changed it); modes
+  // with no matching set fall back to the nav's label dropdown.
+  const inputMode = useConnectionStore((s) => s.inputMode);
+  const labelSetKey =
+    (inputMode !== null ? labelSetForInputMode(inputMode) : undefined) ??
+    appContext?.buttonLabels?.buttonLabelType ??
+    'gp2040';
   const labelSet =
     (BUTTONS as Record<string, Record<string, string>>)[labelSetKey] ??
     (BUTTONS as Record<string, Record<string, string>>).gp2040;
@@ -210,6 +219,7 @@ export default function ControllerViewPage() {
         <h1 className="tw-text-lg tw-font-semibold">{t('controller-header')}</h1>
         <div className="tw-flex tw-items-center tw-gap-2">
           <LayoutStyleSelector value={style} onChange={onStyleChange} />
+          <InputModeSelector />
           <MirroredToggle value={mirrored} onChange={onMirroredChange} />
           <button
             type="button"

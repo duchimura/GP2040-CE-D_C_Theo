@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': '레버리스',
 	'layout-arcade': '아케이드 스틱',
 	'layout-mirrored': '미러',
-	// General settings
-	'general-settings-header': '일반 설정',
+	// Input mode selector
 	'input-mode-label': '입력 모드',
-	'input-mode-help': '컨트롤러가 USB를 통해 에뮬레이트하는 콘솔/프로토콜입니다.',
-	save: '저장',
-	saved: '저장됨',
-	'save-failed': '저장 실패',
-	'load-failed': '불러오기 실패',
-	loading: '불러오는 중…',
+	'input-mode-saving': '저장 중…',
+	'input-mode-saved': '저장되었습니다. 적용하려면 재부팅하세요',
+	'input-mode-save-failed': '저장 실패 — 다시 시도하세요',
 	// Connection banner
 	'conn-searching': '컨트롤러를 검색하는 중…',
 	'conn-connected': '컨트롤러 연결됨',

@@ -7,7 +7,6 @@ import ConnectionBanner from './Components/dc/ConnectionBanner';
 import { useConnectionMonitor } from './Hooks/dc/useConnectionMonitor';
 import { useDcMode } from './Store/useDcMode';
 import { dcElement } from './Data/dc/routeSubstitutions';
-import GeneralSettingsPage from './Pages/dc/GeneralSettingsPage';
 import ControllerViewPage from './Pages/dc/ControllerViewPage';
 
 import HomePage from './Pages/HomePage';
@@ -38,7 +37,6 @@ const App = () => {
 						<Route path="/" element={dcElement('/', dcMode, <HomePage />)} />
 						<Route path="/settings" element={<SettingsPage />} />
 						<Route path="/dc/controller" element={<ControllerViewPage />} />
-						<Route path="/dc/settings" element={<GeneralSettingsPage />} />
 						<Route
 							path="/pin-mapping"
 							element={dcElement('/pin-mapping', dcMode, <PinMappingPage />)}

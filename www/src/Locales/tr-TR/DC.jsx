@@ -9,15 +9,11 @@ export default {
 	'layout-leverless': 'Leverless',
 	'layout-arcade': 'Arcade Stick',
 	'layout-mirrored': 'Aynalı',
-	// General settings
-	'general-settings-header': 'Genel Ayarlar',
+	// Input mode selector
 	'input-mode-label': 'Giriş modu',
-	'input-mode-help': 'Kontrolcünün USB üzerinden emüle ettiği konsol/protokol.',
-	save: 'Kaydet',
-	saved: 'Kaydedildi',
-	'save-failed': 'Kaydetme başarısız',
-	'load-failed': 'Yükleme başarısız',
-	loading: 'Yükleniyor…',
+	'input-mode-saving': 'Kaydediliyor…',
+	'input-mode-saved': 'Kaydedildi — uygulamak için yeniden başlatın',
+	'input-mode-save-failed': 'Kaydetme başarısız — tekrar deneyin',
 	// Connection banner
 	'conn-searching': 'Kontrolcünüz aranıyor…',
 	'conn-connected': 'Kontrolcü bağlandı',

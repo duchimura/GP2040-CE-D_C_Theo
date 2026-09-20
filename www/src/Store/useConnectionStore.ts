@@ -22,6 +22,10 @@ interface ConnectionState {
   status: ConnectionStatus;
   controllerName: string;
   controllerInfo: ControllerInfo | null;
+  // The device's current USB input mode (the console it emulates), read from
+  // the same getGamepadOptions poll that checks reachability. null until known
+  // or while disconnected.
+  inputMode: number | null;
   checkConnection: (fetchImpl?: typeof fetch) => Promise<ConnectionStatus>;
 }
 
@@ -29,6 +33,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
   status: 'searching',
   controllerName: '',
   controllerInfo: null,
+  inputMode: null,
   checkConnection: async (fetchImpl = fetch) => {
     // useConnectionMonitor calls this on a timer even while already
     // connected, just to re-validate. Unconditionally flipping to
@@ -44,6 +49,17 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         headers: { 'Content-Type': 'application/json' },
       });
       const next: ConnectionStatus = res.ok ? 'connected' : 'lost';
+
+      if (next === 'connected') {
+        try {
+          const body = await res.json();
+          set({
+            inputMode: Number.isInteger(body?.inputMode) ? body.inputMode : null,
+          });
+        } catch {
+          // The body is a bonus on top of reachability; keep the last known mode.
+        }
+      }
 
       if (next === 'connected' && !get().controllerName) {
         try {
@@ -66,13 +82,18 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
           // Controller name is a nice-to-have; connection status still stands without it.
         }
       } else if (next !== 'connected') {
-        set({ controllerName: '', controllerInfo: null });
+        set({ controllerName: '', controllerInfo: null, inputMode: null });
       }
 
       set({ status: next });
       return next;
     } catch {
-      set({ status: 'lost', controllerName: '', controllerInfo: null });
+      set({
+        status: 'lost',
+        controllerName: '',
+        controllerInfo: null,
+        inputMode: null,
+      });
       return 'lost';
     }
   },
