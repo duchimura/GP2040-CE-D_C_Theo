@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { getLayout, type LayoutStyle, type ButtonPlacement } from '../../Data/dc/layouts';
 import type { MappedButton } from '../../Hooks/dc/useControllerMapping';
+import type { FaceStyle } from '../../Data/dc/faceButtons';
+import { fitFontSize } from '../../Data/dc/fitLabel';
+import FaceGlyph from './FaceGlyph';
+
+// Horizontal room a label has inside its circle (diameter minus a margin).
+const LABEL_MARGIN = 8;
+// The glyph is a fraction of the circle's radius, sitting where the label text
+// would (just above center, leaving the "Pin N" line below it).
+const GLYPH_SIZE_RATIO = 0.28;
+const GLYPH_OFFSET_Y = 8;
 
 type Props = {
   layoutStyle: LayoutStyle;
@@ -15,6 +25,12 @@ type Props = {
   // to remap you can also drag onto.
   onFunctionDrop?: (buttonKey: string, functionKey: string) => void;
   overrideLabel?: (buttonKey: string) => string | undefined;
+  // The function key a slot is currently showing when overrideLabel replaces its
+  // label (remap mode) — face styling follows the displayed function, not the slot.
+  overrideButtonKey?: (buttonKey: string) => string | undefined;
+  // Optional per-function styling (PlayStation symbols, Xbox colors); functions
+  // it returns nothing for stay plain text. See Data/dc/faceButtons.ts.
+  faceStyleFor?: (buttonKey: string) => FaceStyle | undefined;
   pendingKeys?: Set<string>;
   // Dynamically-detected buttons beyond the standard layout (see
   // Data/dc/extraButtons.ts), rendered the same way as static placements.
@@ -57,6 +73,8 @@ export default function ControllerLayout({
   onButtonClick,
   onFunctionDrop,
   overrideLabel,
+  overrideButtonKey,
+  faceStyleFor,
   pendingKeys,
   extraPlacements = [],
   boardConfig,
@@ -107,6 +125,16 @@ export default function ControllerLayout({
         const label =
           overrideLabel?.(p.key) ??
           (mapped ? labelFor(mapped.buttonKey) : p.action !== undefined ? '' : labelFor(p.key));
+        // The function this slot is showing: a pending remap override, else its
+        // mapped function, else (an unwired standard slot) its own nominal key.
+        const styleKey =
+          overrideButtonKey?.(p.key) ??
+          mapped?.buttonKey ??
+          (p.action === undefined ? p.key : undefined);
+        const faceStyle = styleKey ? faceStyleFor?.(styleKey) : undefined;
+        // Only an idle, assigned button takes the console color; held and
+        // unassigned keep their dark/dim label colors for contrast.
+        const labelColor = wired && !held && faceStyle ? faceStyle.color : c.label;
         return (
           <g
             key={p.key}
@@ -150,16 +178,30 @@ export default function ControllerLayout({
               stroke={dragOver ? '#f59e0b' : pending ? '#f59e0b' : c.stroke}
               strokeWidth={dragOver || pending ? 3 : 2}
             />
-            {label && (
-              <text
-                x={p.x}
-                y={p.y - 2}
-                textAnchor="middle"
-                fill={c.label}
-                style={{ fontSize: '13px', fontWeight: 600 }}
-              >
-                {label}
-              </text>
+            {label && <title>{label}</title>}
+            {label && faceStyle?.shape ? (
+              <FaceGlyph
+                shape={faceStyle.shape}
+                cx={p.x}
+                cy={p.y - GLYPH_OFFSET_Y}
+                size={p.r * GLYPH_SIZE_RATIO}
+                color={labelColor}
+              />
+            ) : (
+              label && (
+                <text
+                  x={p.x}
+                  y={p.y - 2}
+                  textAnchor="middle"
+                  fill={labelColor}
+                  style={{
+                    fontSize: `${fitFontSize(label, p.r * 2 - LABEL_MARGIN)}px`,
+                    fontWeight: 600,
+                  }}
+                >
+                  {label}
+                </text>
+              )
             )}
             {wired && (
               <text

@@ -6,6 +6,7 @@ import { useHeldPinsMonitor } from '../../Hooks/dc/useHeldPinsMonitor';
 import { useConnectionStore } from '../../Store/useConnectionStore';
 import { AppContext } from '../../Contexts/AppContext';
 import { BUTTON_ACTIONS } from '../../Data/Pins';
+import { faceStyleFor } from '../../Data/dc/faceButtons';
 
 const view = {
   profiles: [{ profileLabel: 'P1', enabled: true }],
@@ -370,5 +371,45 @@ describe('ControllerViewPage', () => {
     } finally {
       Object.assign(view, saved);
     }
+  });
+
+  describe('face-button styling follows the device console', () => {
+    const b1 = () => screen.getByTestId('ctrl-btn-B1');
+    // An earlier test leaves pin 6 (B1) held via mockReturnValue, which
+    // clearAllMocks doesn't reset — a held button is drawn dark, not in color.
+    beforeEach(() => {
+      vi.mocked(useHeldPinsMonitor).mockReturnValue([]);
+    });
+    const renderPage = () =>
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <ControllerViewPage />
+        </MemoryRouter>,
+      );
+
+    it('draws PlayStation shapes for PS4', () => {
+      useConnectionStore.setState({ inputMode: 4 });
+      renderPage();
+      expect(b1().querySelector('[data-shape="cross"]')).not.toBeNull();
+      expect(
+        screen.getByTestId('ctrl-btn-B4').querySelector('[data-shape="triangle"]'),
+      ).not.toBeNull();
+    });
+
+    it('colors the Xbox letters for XInput', () => {
+      useConnectionStore.setState({ inputMode: 0 });
+      renderPage();
+      expect(b1().querySelector('[data-shape]')).toBeNull();
+      expect(b1().querySelector('text')?.getAttribute('fill')).toBe(
+        faceStyleFor('xinput', 'B1')?.color,
+      );
+    });
+
+    it('leaves Switch as plain text', () => {
+      useConnectionStore.setState({ inputMode: 1 });
+      renderPage();
+      expect(b1().querySelector('[data-shape]')).toBeNull();
+      expect(b1()).toHaveTextContent('B');
+    });
   });
 });

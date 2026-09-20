@@ -8,6 +8,7 @@ import { useProfilesView } from '../../Hooks/dc/useProfilesView';
 import { useConnectionStore } from '../../Store/useConnectionStore';
 import { labelSetForInputMode } from '../../Data/dc/inputModes';
 import { shortLabel } from '../../Data/dc/shortLabels';
+import { faceStyleFor } from '../../Data/dc/faceButtons';
 import ControllerLayout from '../../Components/dc/ControllerLayout';
 import SystemStatsPanel from '../../Components/dc/SystemStatsPanel';
 import FunctionList from '../../Components/dc/FunctionList';
@@ -153,15 +154,20 @@ export default function ControllerViewPage() {
     [style, resolvedBoardConfig, mirrored, extraPlacements],
   );
 
-  const overrideLabel = (key: string): string | undefined => {
+  // In remap mode a slot shows the function it's being (re)assigned, not the
+  // saved one. No override for an unresolved working function — ControllerLayout's
+  // own fallback then applies (no made-up label, just the pin number for extras).
+  const workingKeyFor = (key: string): string | undefined => {
     if (!remapMode) return undefined;
     const pin = pinByKey.get(key);
     if (pin === undefined) return undefined;
-    const workingKey = buttonKeyForAction(view.currentActions[pin]);
-    // No override for an unresolved working function — ControllerLayout's own
-    // fallback then applies (no made-up label, just the pin number for extras).
+    return buttonKeyForAction(view.currentActions[pin]) ?? undefined;
+  };
+  const overrideLabel = (key: string): string | undefined => {
+    const workingKey = workingKeyFor(key);
     return workingKey ? circleLabelFor(workingKey) : undefined;
   };
+  const faceStyleForKey = (key: string) => faceStyleFor(labelSetKey, key);
 
   const pendingKeySet = new Set<string>(
     Array.from(pinByKey.entries())
@@ -282,6 +288,8 @@ export default function ControllerViewPage() {
                 onButtonClick={onButtonClick}
                 onFunctionDrop={onFunctionDrop}
                 overrideLabel={overrideLabel}
+                overrideButtonKey={workingKeyFor}
+                faceStyleFor={faceStyleForKey}
                 pendingKeys={pendingKeySet}
                 extraPlacements={extraPlacements}
                 boardConfig={resolvedBoardConfig}
@@ -302,6 +310,7 @@ export default function ControllerViewPage() {
                 mapping={view.currentMapping}
                 heldPins={heldPins}
                 labelFor={circleLabelFor}
+                faceStyleFor={faceStyleForKey}
                 extraPlacements={extraPlacements}
                 boardConfig={resolvedBoardConfig}
                 mirrored={mirrored}
